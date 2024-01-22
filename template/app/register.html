@@ -1,0 +1,35 @@
+{% extends "app/base.html" %}
+{% load static %}
+{% block content %}
+
+<div class="container mt-5">
+     <div class="row justify-content-center">
+          <div class="col-md-10">
+               {% if messages %}
+               {% for message in messages %}
+               <div class="alert alert-{{message.tags}} alert-dismissible fade show" role="alert">
+                    {{message}}
+
+                    {% if form.errors and form.non_field_errors %}
+                    {{form.non_field_errors}}
+                    {% endif %}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                         <span aria-hidden="true">&times;</span>
+                    </button>
+               </div>
+               {% endfor %}
+               {% endif %}
+               <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <h2>Membership Management Form</h2>
+                    {{ form.as_p }}
+                    <button type="submit" class="btn btn-success">Submit</button>
+
+               </form>
+          </div>
+
+     </div>
+</div>
+
+
+{% endblock content %}
