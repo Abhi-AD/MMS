@@ -1,0 +1,52 @@
+{% extends "admin/base.html" %}
+{% load static %}
+{% block content %}
+<div class="container mt-5">
+     <div class="row justify-content-center">
+          <div class="col-md-3">
+               <div class="row">
+                    <div class="col-md-4 btn btn-primary">
+                         <p class="text-light">Total Balance: <br>{{ total_amount }}</p>
+                    </div>
+               </div>
+          </div>
+          <div class="col-md-7">
+               <h2>Payment History</h2>
+               <table class="table table-striped">
+                    <thead>
+                         <tr>
+                              <th>S.N</th>
+                              <th>Amount</th>
+                              <th>Category</th>
+                              <th>Date</th>
+                              <th>Bill</th>
+                         </tr>
+                    </thead>
+                    {% for transaction in object_list %}
+                    <tbody>
+                         <style>
+                              .img-container:hover img {
+                                   transform: scale(1.5);
+                              }
+                         </style>
+                         <tr>
+                              <td>{{forloop.counter}}</td>
+                              <td>{{transaction.amount}}</td>
+                              <td>{{transaction.category}}</td>
+                              <td>{{transaction.payment_date}}</td>
+                              <td>
+                                   <div class="img-container">
+                                        <img src="{{transaction.bill.url}}" alt="{{ transaction.category}}"
+                                             class="img-thumbnail" style="max-width: 100px;">
+                                   </div>
+                              </td>
+                         </tr>
+                         <!-- Add more rows as needed -->
+                    </tbody>
+                    {% endfor %}
+               </table>
+          </div>
+
+     </div>
+</div>
+{% endblock content %}

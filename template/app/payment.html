@@ -1,0 +1,27 @@
+{% extends "app/base.html" %}
+{% load static %}
+{% block content %}
+<div class="container mt-3">
+     {% if messages %}
+     {% for message in messages %}
+     <div class="alert alert-{{message.tags}} alert-dismissible fade show" role="alert">
+          {{message}}
+
+          {% if form.errors and form.non_field_errors %}
+          {{form.non_field_errors}}
+          {% endif %}
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+               <span aria-hidden="true">&times;</span>
+          </button>
+     </div>
+     {% endfor %}
+     {% endif %}
+     <div class="row">
+          <div class="col-md-6">
+               <!-- Your QR Code image -->
+               <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/QR_code_for_mobile_English_Wikipedia.svg/1200px-QR_code_for_mobile_English_Wikipedia.svg.png"
+                    alt="QR Code" class="img-fluid" width="500px">
+          </div>
+     </div>
+</div>
+{% endblock %}

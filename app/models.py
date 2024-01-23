@@ -1,14 +1,9 @@
 from django.db import models
-from django.contrib.auth.models import User
 from django.utils import timezone
 
 
 # Create your models here.
 class AddMember(models.Model):
-    STATUS_PAYMENT = [
-        ("online", "Online"),
-        ("case", "Case"),
-    ]
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     images = models.ImageField(upload_to="Addmember/%Y/%m/%d", blank=False)
@@ -17,7 +12,6 @@ class AddMember(models.Model):
     city = models.CharField(max_length=100, blank=True, null=True)
     state_province = models.CharField(max_length=100, blank=True, null=True)
     email = models.EmailField()
-    billing_address = models.CharField(max_length=20, choices=STATUS_PAYMENT)
     date_of_signature = models.DateTimeField(default=timezone.now)
     contact = models.CharField(max_length=10)
     emergency_contact = models.CharField(max_length=10, blank=True, null=True)
@@ -25,3 +19,40 @@ class AddMember(models.Model):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
+    
+    
+class RegistrationRequest(models.Model):
+    STATUS_CHOICES = [
+        ("pending", "Pending"),
+        ("approved", "Approved"),
+        ("rejected", "Rejected"),
+    ]
+
+    member = models.OneToOneField(AddMember, on_delete=models.CASCADE)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
+    images = models.ImageField(upload_to="Document/%Y/%m/%d", blank=True)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+        # Automatically save or delete AddMember instance based on status
+        if self.status == "approved" and self.images:
+            # If status is approved and images are present, do something
+            # For example, you can access images using self.images
+            pass
+        elif self.status == "rejected":
+            # If status is rejected, delete the associated AddMember instance
+            self.member.delete()
+            
+            
+class Payment(models.Model):
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    payment_date = models.DateTimeField(auto_now_add=True)
+    bill = models.ImageField(upload_to="Payment/%Y/%m/%d")
+    category = models.CharField(max_length=100)  # Corrected typo in max_length
+
+    
+    def __str__(self):
+        return f"{self.category} {self.amount}"
+             
+    

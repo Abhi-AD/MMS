@@ -22,8 +22,9 @@ from django.contrib.auth import views
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("admin-user", include("blog_app.urls")),
+    path("blog/", include("blog_app.urls")),
     path("", include("app.urls")),
+    path("main/", include("admin_app.urls")),
     
     # # django login and logout the already folder in database for the using
     path("accounts/login/", views.LoginView.as_view(), name="login"),

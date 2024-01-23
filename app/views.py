@@ -45,9 +45,9 @@ class AddMemberView(CreateView):
         if form.is_valid():
             form.save()
             messages.success(
-                request, "Successfully submitted your query. We will add you soon "
+                request, "Please pay first "
             )
-            return redirect("register")
+            return render(request, template_name="app/payment.html")
         else:
             messages.error(request, "Cannot submit your data. ")
             return render(
@@ -57,3 +57,5 @@ class AddMemberView(CreateView):
             )
 
 
+
+    

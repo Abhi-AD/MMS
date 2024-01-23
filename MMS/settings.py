@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     # custom app
     'blog_app',
     'app',
+    'admin_app',
 ]
 
 MIDDLEWARE = [
