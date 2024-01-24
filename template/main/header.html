@@ -7,6 +7,7 @@
           </button>
           <div class="collapse navbar-collapse" id="navbarNav">
                <ul class="navbar-nav">
+                    {% if user.is_superuser %}
                     <li class="nav-item">
                          <a class="nav-link" href="{% url 'payment_history' %}">Payment History</a>
                     </li>
@@ -16,7 +17,10 @@
                     <li class="nav-item">
                          <a class="nav-link" href="#">Blog</a>
                     </li>
+                    {% endif %}
+
                </ul>
+
           </div>
      </div>
 </nav>

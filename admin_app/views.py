@@ -16,6 +16,31 @@ from app.models import *
 from admin_app.forms import PaymentForm
 
 # create the view
+class MainView(View):
+    template_name = "main/super_user_login.html"
+
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name)
+
+    def post(self, request, *args, **kwargs):
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+
+        # authenticate
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None and user.is_superuser:
+            # Only allow superusers to log in
+            login(request, user)
+            messages.success(request, "You have been logged in!")
+            return redirect("main")
+        else:
+            messages.error(request, "Username or Password is incorrect.")
+            return redirect("main")
+
+
+
+
 class PaymentListView(ListView):
     model = Payment
     template_name = "main/payment_list.html"
@@ -34,8 +59,6 @@ class PaymentListView(ListView):
 
         return context
     
-
-
 
 
 class PaymentCreateView(CreateView):
@@ -61,3 +84,6 @@ class PaymentCreateView(CreateView):
                 self.template_name,
                 {"form": form},
             )
+            
+            
+         

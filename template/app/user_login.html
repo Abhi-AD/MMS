@@ -4,7 +4,8 @@
      <h2>Login</h2>
      {% csrf_token %}
      {{ form.as_p }}
-     <button type="submit">Login</button>
+     <button type="submit" class="btn btn-success">Login</button>
+     <a href="{% url 'user_register' %}" class="btn btn-primary">Signup</a>
 </form>
 {% if error_message %}
 <p>{{ error_message }}</p>

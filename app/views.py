@@ -18,7 +18,7 @@ from django.views.generic import (
 )
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse, reverse_lazy
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.views import LogoutView, LoginView
 from django.views import View
 from django.contrib import messages
@@ -33,8 +33,9 @@ from app.forms import (
 from django.contrib.auth.models import User
 
 # *******************************************************************************************************
-class HomeView(TemplateView):
+class HomeView(LoginRequiredMixin, TemplateView):
     template_name = "app/home.html"
+    login_url = '/user_login/'  
 
 
 class AddMemberView(CreateView):
@@ -133,4 +134,9 @@ class UserLoginView(View):
                 )
 
         return render(request, self.template_name, {"form": form})   
-    
+ 
+ 
+class UserLogoutView(View):
+    def get(self, request, *args, **kwargs):
+        logout(request)
+        return redirect("home")

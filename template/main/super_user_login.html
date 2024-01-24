@@ -1,0 +1,22 @@
+{% extends 'main/base.html' %}
+{% block content %}
+{% if user.is_superuser %}
+hy
+
+{% else %}
+<div class="col-mb-6 offset-md-3">
+     <h1>Login Admin</h1>
+     <form method="POST" action="{% url 'main' %}">
+          {% csrf_token %}
+          <div class="mb-3">
+               <input type="text" class="form-control" name="username" placeholder="username" required>
+          </div>
+          <div class="mb-3">
+               <input type="password" class="form-control" name="password" placeholder="password" required>
+          </div>
+          <button type="submit" class="btn btn-success">Login</button>
+
+     </form>
+</div>
+{% endif %}
+{% endblock content %}

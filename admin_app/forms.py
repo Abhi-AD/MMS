@@ -1,5 +1,5 @@
 from django import forms
-from app.models import *
+from admin_app.models import *
 
 
 class PaymentForm(forms.ModelForm):
