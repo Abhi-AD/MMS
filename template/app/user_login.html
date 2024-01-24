@@ -1,0 +1,12 @@
+{% extends 'app/base.html' %}
+{% block content %}
+<form method="post" action="{% url 'user_login' %}" class="form-control">
+     <h2>Login</h2>
+     {% csrf_token %}
+     {{ form.as_p }}
+     <button type="submit">Login</button>
+</form>
+{% if error_message %}
+<p>{{ error_message }}</p>
+{% endif %}
+{% endblock %}

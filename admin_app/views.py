@@ -18,7 +18,7 @@ from admin_app.forms import PaymentForm
 # create the view
 class PaymentListView(ListView):
     model = Payment
-    template_name = "app/payment_list.html"
+    template_name = "main/payment_list.html"
 
     def get_queryset(self):
         return Payment.objects.all()
@@ -39,7 +39,7 @@ class PaymentListView(ListView):
 
 
 class PaymentCreateView(CreateView):
-    template_name = 'admin/payment_form.html'
+    template_name = 'main/payment_form.html'
     form_class = PaymentForm
     
     def get(self, request):

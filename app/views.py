@@ -25,12 +25,17 @@ from django.contrib import messages
 from django.db.models import Count
 from app.models import *
 from app.forms import (
-    RegistrationForm
+    RegistrationForm,
+    UserRegisterForm,
+    UserLoginForm
 )
+
+from django.contrib.auth.models import User
 
 # *******************************************************************************************************
 class HomeView(TemplateView):
     template_name = "app/home.html"
+
 
 class AddMemberView(CreateView):
     template_name = "app/register.html"
@@ -44,9 +49,7 @@ class AddMemberView(CreateView):
         form = self.form_class(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-            messages.success(
-                request, "Please pay first "
-            )
+            messages.success(request, "Please pay first ")
             return render(request, template_name="app/payment.html")
         else:
             messages.error(request, "Cannot submit your data. ")
@@ -57,5 +60,77 @@ class AddMemberView(CreateView):
             )
 
 
+class UserRegisterView(View):
+    template_name = "app/user_register.html"
 
+    def get(self, request, *args, **kwargs):
+        form = UserRegisterForm()
+        return render(request, self.template_name, {"form": form})
+
+    def post(self, request, *args, **kwargs):
+        form = UserRegisterForm(request.POST)
+        if form.is_valid():
+            if User.objects.filter(username=form.cleaned_data["username"]).exists():
+                return render(
+                    request,
+                    self.template_name,
+                    {"form": form, "error_message": "Username already exists."},
+                )
+            elif User.objects.filter(email=form.cleaned_data["email"]).exists():
+                return render(
+                    request,
+                    self.template_name,
+                    {"form": form, "error_message": "Email already exists."},
+                )
+            elif form.cleaned_data["password"] != form.cleaned_data["password_repeat"]:
+                return render(
+                    request,
+                    self.template_name,
+                    {"form": form, "error_message": "Passwords do not match."},
+                )
+            else:
+                user = User.objects.create_user(
+                    form.cleaned_data["username"],
+                    form.cleaned_data["email"],
+                    form.cleaned_data["password"],
+                )
+                user.first_name = form.cleaned_data["first_name"]
+                user.last_name = form.cleaned_data["last_name"]
+                user.phone_number = form.cleaned_data["phone_number"]
+                user.save()
+
+                login(request, user)
+
+                return redirect("user_login")
+
+        return render(request, self.template_name, {"form": form})
+    
+    
+
+class UserLoginView(View):
+    template_name = "app/user_login.html"
+
+    def get(self, request, *args, **kwargs):
+        form = UserLoginForm()
+        return render(request, self.template_name, {"form": form})
+
+    def post(self, request, *args, **kwargs):
+        form = UserLoginForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data["username"]
+            password = form.cleaned_data["password"]
+
+            user = authenticate(request, username=username, password=password)
+
+            if user is not None:
+                login(request, user)
+                return redirect("home")
+            else:
+                return render(
+                    request,
+                    self.template_name,
+                    {"form": form, "error_message": "Invalid username or password."},
+                )
+
+        return render(request, self.template_name, {"form": form})   
     
