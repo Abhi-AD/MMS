@@ -1,0 +1,28 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% block content %}
+{% if user.is_superuser %}
+<div class="container mt-5 text-capitalize">
+    <div class="col-md-6">
+        <img src="{{customer_request.member.images.url}}" class="rounded-circle img-fluid"
+            style="width: 200px; height: 200px; object-fit: cover;" />
+    </div>
+    <div class="col-md-6">
+        <h3>{{ customer_request.member.member.first_name }} Request Details</h3>
+        <p>Name: {{ customer_request.member.member.first_name }} {{ customer_request.member.member.last_name }}</p>
+        <p>Status: {{ customer_request.status }}</p>
+    </div>
+
+    <form method="post" class="container mt-3">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Submit" class="btn btn-success">
+    </form>
+</div>
+
+
+{% else %}
+{% include 'main/login.html' %}
+
+{% endif %}
+{% endblock content %}
