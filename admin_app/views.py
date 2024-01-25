@@ -1,15 +1,9 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from django.views.generic import TemplateView, View, ListView, CreateView
-from django.http import HttpResponseRedirect,JsonResponse
-from django.urls import reverse,reverse_lazy
-from django.contrib.auth import authenticate, login
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.views import LogoutView, LoginView
+from django.shortcuts import render, redirect
+from django.views.generic import  View, ListView, CreateView
+from django.contrib.auth import authenticate, login, logout
 from django.views import View
 from django.contrib import messages
 
-from django.db.models import Count
-from django.utils import timezone
 
 from admin_app.models import *
 from app.models import *
@@ -85,5 +79,9 @@ class PaymentCreateView(CreateView):
                 {"form": form},
             )
             
-            
+
+class AdminLogoutView(View):
+    def get(self, request, *args, **kwargs):
+        logout(request)
+        return redirect("main")           
          

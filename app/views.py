@@ -38,9 +38,12 @@ class HomeView(LoginRequiredMixin, TemplateView):
     login_url = '/user_login/'  
 
 
-class AddMemberView(CreateView):
+class FormRegister(LoginRequiredMixin,CreateView):
     template_name = "app/register.html"
     form_class = RegistrationForm
+    login_url = '/user_login/'  
+    
+
 
     def get(self, request):
         form = self.form_class()
