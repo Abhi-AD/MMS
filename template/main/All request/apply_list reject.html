@@ -1,0 +1,54 @@
+{% extends "main/base.html" %}
+{% load static %}
+{% block content %}
+{% if user.is_superuser %}
+
+<div class="table-responsive text-capitalize">
+     {% include 'main/All request/status_title.html' %}
+     <table class="table  table-hover table-bordered">
+          <thead class="table-primary">
+               <tr>
+                    <th>S.N</th>
+                    <th>Name</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Bill</th>
+                    <th>Edit</th>
+               </tr>
+          </thead>
+          <tbody>
+               {% for obj in obj %}
+          <tbody>
+               <style>
+                    .img-container:hover img {
+                         transform: scale(1.5);
+                    }
+               </style>
+               <tr>
+                    <td>{{forloop.counter}}</td>
+                    <td>{{obj.member.member.first_name}} {{obj.member.member.last_name}}</td>
+                    <td>{{obj.status}}</td>
+                    <td>{{obj.update_at}}</td>
+                    <td>
+                         <div class="img-container">
+                              <img src="{{obj.images.url}}" alt="{{ obj.category}}" class="img-thumbnail"
+                                   style="max-width: 100px;">
+                         </div>
+                    </td>
+                    <td>
+                         <a href="{% url 'change_status' obj.pk %}" class="btn btn-warning text-light">Edit Status</a>
+                    </td>
+
+               </tr>
+               <!-- Add more rows as needed -->
+          </tbody>
+          {% endfor %}
+          </tbody>
+     </table>
+</div>
+
+{% else %}
+{% include 'main/login.html' %}
+
+{% endif %}
+{% endblock content %}

@@ -1,0 +1,6 @@
+<div style="display: flex; justify-content: space-around;">
+     <a href="{% url 'cutomer_pendling_list' %}" class="btn btn-warning text-light">Pending Requests: {{ pending_count }}</a>
+     <a href="{% url 'cutomer_pendling_approval_list' %}" class="btn btn-primary text-light">Pending Approved Requests: {{ pending_approval_count }}</a>
+     <a href="{% url 'cutomer_approval_list' %}" class="btn btn-success text-light">Approved Requests: {{ approved_count }}</a>
+     <a href="{% url 'cutomer_reject_list' %}" class="btn btn-danger text-light">Rejected Requests: {{ rejected_count }}</a>
+</div>

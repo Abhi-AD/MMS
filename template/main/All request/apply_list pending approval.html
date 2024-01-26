@@ -4,12 +4,8 @@
 {% if user.is_superuser %}
 
 <div class="table-responsive text-capitalize">
-     <div style="display: flex; justify-content: space-around;">
-          <h2 class="btn btn-warning text-light">Pending Requests: {{ pending_count }}</h2>
-          <h2 class="btn btn-primary text-light">Pending Approved Requests: {{ pending_approval_count }}</h2>
-          <h2 class="btn btn-success text-light">Approved Requests: {{ approved_count }}</h2>
-          <h2 class="btn btn-danger text-light">Rejected Requests: {{ rejected_count }}</h2>
-      </div>
+     {% include 'main/All request/status_title.html' %}
+
      <table class="table  table-hover table-bordered">
           <thead class="table-primary">
                <tr>

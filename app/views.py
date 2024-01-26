@@ -33,6 +33,7 @@ from app.forms import (
 from django.contrib.auth.models import User
 
 # *******************************************************************************************************
+
 class HomeView(LoginRequiredMixin, TemplateView):
     template_name = "app/home.html"
     login_url = '/user_login/'  
@@ -110,7 +111,6 @@ class UserRegisterView(View):
         return render(request, self.template_name, {"form": form})
     
     
-
 class UserLoginView(View):
     template_name = "app/user_login.html"
 
@@ -143,3 +143,4 @@ class UserLogoutView(View):
     def get(self, request, *args, **kwargs):
         logout(request)
         return redirect("home")
+

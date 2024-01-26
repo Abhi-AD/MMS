@@ -107,7 +107,95 @@ class AdminLogoutView(View):
 
 class CustomerFormListView(ListView):
     model = CustomerApplyRequest
-    template_name = 'main/apply_list.html'
+    template_name = 'main/All request/apply_list.html'
+    context_object_name = 'obj'  # Variable name used in the template
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)        
+        pending_count = CustomerApplyRequest.objects.filter(status='pending').count()
+        pending_approval_count = CustomerApplyRequest.objects.filter(status='pending_approval').count()
+        approved_count = CustomerApplyRequest.objects.filter(status='approved').count()
+        rejected_count = CustomerApplyRequest.objects.filter(status='rejected').count()
+
+        # Add counts to the context
+        context['pending_count'] = pending_count
+        context['pending_approval_count'] = pending_approval_count
+        context['approved_count'] = approved_count
+        context['rejected_count'] = rejected_count
+
+        return context  
+
+
+
+class ChangeStatusView(View):
+    template_name = 'main/All request/status.html'
+    form_class = RequestRegistrationForm
+
+    def get(self, request, request_id):
+        customer_request = get_object_or_404(CustomerApplyRequest, id=request_id)
+        form = self.form_class(instance=customer_request)
+        return render(request, self.template_name, {'form': form, 'customer_request': customer_request})
+
+    def post(self, request, request_id):
+        customer_request = get_object_or_404(CustomerApplyRequest, id=request_id)
+        form = self.form_class(request.POST, instance=customer_request)
+        if form.is_valid():
+            form.save()
+            return redirect('cutomer_form_list')  # Redirect to a success page or any other page
+        return render(request, self.template_name, {'form': form, 'customer_request': customer_request})
+
+
+
+class CustomerPendingFormListView(ListView):
+    model = PendingCustomerRequest
+    template_name = 'main/All request/apply_list pending.html'
+    context_object_name = 'obj'  # Variable name used in the template
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # Count the status types
+        pending_count = CustomerApplyRequest.objects.filter(status='pending').count()
+        pending_approval_count = CustomerApplyRequest.objects.filter(status='pending_approval').count()
+        approved_count = CustomerApplyRequest.objects.filter(status='approved').count()
+        rejected_count = CustomerApplyRequest.objects.filter(status='rejected').count()
+
+        # Add counts to the context
+        context['pending_count'] = pending_count
+        context['pending_approval_count'] = pending_approval_count
+        context['approved_count'] = approved_count
+        context['rejected_count'] = rejected_count
+
+        return context  
+
+
+
+class CustomerPendingApprovalFormListView(ListView):
+    model = PendingApprovalModel
+    template_name = 'main/All request/apply_list pending approval.html'
+    context_object_name = 'obj'  # Variable name used in the template
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # Count the status types
+        pending_count = CustomerApplyRequest.objects.filter(status='pending').count()
+        pending_approval_count = CustomerApplyRequest.objects.filter(status='pending_approval').count()
+        approved_count = CustomerApplyRequest.objects.filter(status='approved').count()
+        rejected_count = CustomerApplyRequest.objects.filter(status='rejected').count()
+
+        # Add counts to the context
+        context['pending_count'] = pending_count
+        context['pending_approval_count'] = pending_approval_count
+        context['approved_count'] = approved_count
+        context['rejected_count'] = rejected_count
+
+        return context  
+
+
+class CustomerApprovalFormListView(ListView):
+    model = ApprovedCustomerRequest
+    template_name = 'main/All request/apply_list approval.html'
     context_object_name = 'obj'  # Variable name used in the template
 
     def get_context_data(self, **kwargs):
@@ -129,25 +217,28 @@ class CustomerFormListView(ListView):
 
 
 
-class ChangeStatusView(View):
-    template_name = 'main/status.html'
-    form_class = RequestRegistrationForm
 
-    def get(self, request, request_id):
-        customer_request = get_object_or_404(CustomerApplyRequest, id=request_id)
-        form = self.form_class(instance=customer_request)
-        return render(request, self.template_name, {'form': form, 'customer_request': customer_request})
+class CustomerRejectFormListView(ListView):
+    model = RejectedCusomerRequest
+    template_name = 'main/All request/apply_list reject.html'
+    context_object_name = 'obj'  # Variable name used in the template
 
-    def post(self, request, request_id):
-        customer_request = get_object_or_404(CustomerApplyRequest, id=request_id)
-        form = self.form_class(request.POST, instance=customer_request)
-        if form.is_valid():
-            form.save()
-            return redirect('cutomer_form_list')  # Redirect to a success page or any other page
-        return render(request, self.template_name, {'form': form, 'customer_request': customer_request})
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # Count the status types
+        pending_count = CustomerApplyRequest.objects.filter(status='pending').count()
+        pending_approval_count = CustomerApplyRequest.objects.filter(status='pending_approval').count()
+        approved_count = CustomerApplyRequest.objects.filter(status='approved').count()
+        rejected_count = CustomerApplyRequest.objects.filter(status='rejected').count()
 
+        # Add counts to the context
+        context['pending_count'] = pending_count
+        context['pending_approval_count'] = pending_approval_count
+        context['approved_count'] = approved_count
+        context['rejected_count'] = rejected_count
 
-
+        return context  
 
 
 
