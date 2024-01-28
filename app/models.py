@@ -15,7 +15,7 @@ class Member(models.Model):
 
 
 class Customer(models.Model):
-    member = models.OneToOneField(User, on_delete=models.CASCADE)
+    member = models.ForeignKey(User, on_delete=models.CASCADE)
     images = models.ImageField(upload_to="Customer/%Y/%m/%d", blank=False)
     street_address = models.CharField(max_length=255, blank=True, null=True)
     street_address2 = models.CharField(max_length=255, blank=True, null=True)
@@ -26,6 +26,7 @@ class Customer(models.Model):
     emergency_contact = models.CharField(max_length=10, blank=True, null=True)
     emergency_contact2 = models.CharField(max_length=10, blank=True, null=True)
     rollnumber = models.CharField(max_length=20, unique=True, editable=False)
+    customercode = models.IntegerField(null=True)
 
     def __str__(self):
         return (

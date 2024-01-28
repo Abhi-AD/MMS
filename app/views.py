@@ -3,6 +3,7 @@ from django.db import models
 from django.db.models.query import QuerySet
 from django.forms.models import BaseModelForm
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.forms import UserCreationForm
 
 # from app.models import Post
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
@@ -27,24 +28,24 @@ from app.models import *
 from app.forms import (
     RegistrationForm,
     UserRegisterForm,
-    UserLoginForm
+    UserLoginForm,
+    CustomerRegistrationForm,
 )
-
+from django.views.generic.edit import FormView
 from django.contrib.auth.models import User
 
 # *******************************************************************************************************
 
+
 class HomeView(LoginRequiredMixin, TemplateView):
     template_name = "app/home.html"
-    login_url = '/user_login/'  
+    login_url = "/user_login/"
 
 
-class FormRegister(LoginRequiredMixin,CreateView):
+class FormRegister(LoginRequiredMixin, CreateView):
     template_name = "app/register.html"
     form_class = RegistrationForm
-    login_url = '/user_login/'  
-    
-
+    login_url = "/user_login/"
 
     def get(self, request):
         form = self.form_class()
@@ -65,52 +66,7 @@ class FormRegister(LoginRequiredMixin,CreateView):
             )
 
 
-class UserRegisterView(View):
-    template_name = "app/user_register.html"
 
-    def get(self, request, *args, **kwargs):
-        form = UserRegisterForm()
-        return render(request, self.template_name, {"form": form})
-
-    def post(self, request, *args, **kwargs):
-        form = UserRegisterForm(request.POST)
-        if form.is_valid():
-            if User.objects.filter(username=form.cleaned_data["username"]).exists():
-                return render(
-                    request,
-                    self.template_name,
-                    {"form": form, "error_message": "Username already exists."},
-                )
-            elif User.objects.filter(email=form.cleaned_data["email"]).exists():
-                return render(
-                    request,
-                    self.template_name,
-                    {"form": form, "error_message": "Email already exists."},
-                )
-            elif form.cleaned_data["password"] != form.cleaned_data["password_repeat"]:
-                return render(
-                    request,
-                    self.template_name,
-                    {"form": form, "error_message": "Passwords do not match."},
-                )
-            else:
-                user = User.objects.create_user(
-                    form.cleaned_data["username"],
-                    form.cleaned_data["email"],
-                    form.cleaned_data["password"],
-                )
-                user.first_name = form.cleaned_data["first_name"]
-                user.last_name = form.cleaned_data["last_name"]
-                user.phone_number = form.cleaned_data["phone_number"]
-                user.save()
-
-                login(request, user)
-
-                return redirect("user_login")
-
-        return render(request, self.template_name, {"form": form})
-    
-    
 class UserLoginView(View):
     template_name = "app/user_login.html"
 
@@ -136,11 +92,58 @@ class UserLoginView(View):
                     {"form": form, "error_message": "Invalid username or password."},
                 )
 
-        return render(request, self.template_name, {"form": form})   
- 
- 
+        return render(request, self.template_name, {"form": form})
+
+
 class UserLogoutView(View):
     def get(self, request, *args, **kwargs):
         logout(request)
         return redirect("home")
+
+
+
+
+class RegistrationView(FormView):
+    template_name = "app/user_register.html"
+    form_class = CustomerRegistrationForm
+    success_url = reverse_lazy("user_login")  # Replace with the actual login URL
+
+    def form_valid(self, form):
+        return super().form_valid(form)
+
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+
+        if form.is_valid():
+            # Get data from the form
+            first_name = form.cleaned_data["first_name"]
+            last_name = form.cleaned_data["last_name"]
+            customercode = form.cleaned_data["customercode"]
+            username = form.cleaned_data["username"]
+            password = form.cleaned_data["password"]
+            images = form.cleaned_data["images"]
+
+            try:
+                # Create a new user
+                user = User.objects.create_user(
+                    username=username,
+                    password=password,
+                    first_name=first_name,
+                    last_name=last_name,
+                )
+
+                # Create related EmployeeDetail instance
+                Customer.objects.create(member=user, customercode=customercode, images=images)
+                return super().form_valid(form)
+            except Exception as e:
+                # Handle any errors here
+                # You can add error messages to the form or use a different approach to display errors
+                form.add_error(None, "An error occurred during registration.")
+                return self.form_invalid(form)
+        else:
+            return self.form_invalid(form)
+
+
+
+
 

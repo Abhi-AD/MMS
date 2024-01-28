@@ -6,8 +6,7 @@ from app.models import (
     PendingApprovalModel,
     ApprovedCustomerRequest,
     RejectedCustomerRequest,
-    Member
-
+    Member,
 )
 
 
