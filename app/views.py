@@ -37,9 +37,14 @@ from django.contrib.auth.models import User
 # *******************************************************************************************************
 
 
+
 class HomeView(LoginRequiredMixin, TemplateView):
     template_name = "app/home.html"
     login_url = "/user_login/"
+
+    def get(self, request, *args, **kwargs):
+        messages.success(self.request, f'User LogIn Successfully {request.user.username}...!')
+        return super().get(request, *args, **kwargs)
 
 
 class FormRegister(LoginRequiredMixin, CreateView):
@@ -97,7 +102,9 @@ class UserLoginView(View):
 
 class UserLogoutView(View):
     def get(self, request, *args, **kwargs):
+        username = request.user.username  # Get the username before logging out
         logout(request)
+        messages.success(request, f'User LogOut Successfully {username}...!')
         return redirect("home")
 
 

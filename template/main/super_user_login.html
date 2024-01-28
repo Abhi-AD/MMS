@@ -1,7 +1,35 @@
 {% extends 'main/base.html' %}
 {% block content %}
 {% if user.is_superuser %}
-hy
+<div class="container col-8">
+     <h1>Welcome to MMS App Admin</h1>
+     <h1>{{ user.username }}'s Profile</h1>
+     <p>First Name: {{ user.first_name }}</p>
+     <p>Last Name: {{ user.last_name }}</p>
+     <div id="greeting" class="h2"></div>
+     <h2>Thank you visit in app <a href="{% url 'home' %}">{{user.first_name}} {{user.last_name}}</a></h2>
+</div>
+<br>
+<script>
+     document.addEventListener('DOMContentLoaded', function () {
+          var greetingElement = document.getElementById('greeting');
+          var currentTime = new Date().getHours();
+
+          var greeting;
+          if (currentTime >= 0 && currentTime < 12) {
+               greeting = 'Good morning!{{user.first_name}} {{user.last_name}}';
+          } else if (currentTime >= 12 && currentTime < 16) {
+               greeting = 'Good afternoon!{{user.first_name}} {{user.last_name}}';
+          } else if (currentTime >= 16 && currentTime < 21) {
+               greeting = 'Good evening! {{user.first_name}} {{user.last_name}}';
+          } else {
+               greeting = 'Good night!{{user.first_name}} {{user.last_name}}';
+          }
+
+          greetingElement.textContent = greeting;
+     });
+</script>
+
 
 {% else %}
 {% include 'main/login.html' %}
