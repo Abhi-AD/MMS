@@ -5,6 +5,7 @@
 
 <div class="table-responsive text-capitalize">
      {% include 'main/All request/status_title.html' %}
+
      <table class="table  table-hover table-bordered">
           <thead class="table-primary">
                <tr>
@@ -46,6 +47,7 @@
           </tbody>
      </table>
 </div>
+{% include 'pagination.html' %}
 
 {% else %}
 {% include 'main/login.html' %}

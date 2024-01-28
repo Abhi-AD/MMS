@@ -5,7 +5,8 @@ from app.models import (
     PendingCustomerRequest,
     PendingApprovalModel,
     ApprovedCustomerRequest,
-    RejectedCusomerRequest,
+    RejectedCustomerRequest,
+    Member
 
 )
 
@@ -16,4 +17,5 @@ admin.site.register(CustomerApplyRequest)
 admin.site.register(PendingCustomerRequest)
 admin.site.register(PendingApprovalModel)
 admin.site.register(ApprovedCustomerRequest)
-admin.site.register(RejectedCusomerRequest)
+admin.site.register(RejectedCustomerRequest)
+admin.site.register(Member)

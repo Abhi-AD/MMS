@@ -1,3 +1,15 @@
+<style>
+     /* Custom CSS for Navbar Hover Effect */
+     .navbar-nav>li:hover {
+          background-color: #007bff;
+          /* Change to the desired background color on hover */
+     }
+
+     .navbar-nav>li:hover>a {
+          color: #fff;
+          /* Change to the desired text color on hover */
+     }
+</style>
 <nav class="navbar navbar-expand-lg bg-body-tertiary">
      <div class="container-fluid">
           <a class="navbar-brand" href="{% url 'payment' %}">MMS</a>
@@ -20,7 +32,7 @@
                     <li class="nav-item">
                          <a class="nav-link" href="{% url 'main_logout' %}">Logout</a>
                     </li>
-                    
+
                     {% endif %}
 
                </ul>

@@ -3,7 +3,15 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.db import transaction
 # Create your models here.
+
+class Member(models.Model):
+    name = models.CharField(max_length=255)
+    email = models.EmailField()
+
+    def __str__(self):
+        return self.name
 
 
 class Customer(models.Model):
@@ -46,60 +54,71 @@ class CustomerApplyRequest(models.Model):
 
     member = models.ForeignKey(Customer, on_delete=models.CASCADE)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
-    images = models.ImageField(upload_to="Cutomer_form/%Y/%m/%d", blank=True)
+    images = models.ImageField(upload_to="Customer_form/%Y/%m/%d", blank=True)
     update_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.member.member.first_name} {self.member.member.last_name}"
-
-
+        return f"{self.member.member.first_name} {self.member.member.last_name} - {self.get_status_display()}"
 
 
 @receiver(post_save, sender=CustomerApplyRequest)
 def handle_customer_apply_request(sender, instance, **kwargs):
+    # Delete existing instances in other models with the same member
+    PendingCustomerRequest.objects.filter(member=instance.member).delete()
+    PendingApprovalModel.objects.filter(member=instance.member).delete()
+    ApprovedCustomerRequest.objects.filter(member=instance.member).delete()
+    RejectedCustomerRequest.objects.filter(member=instance.member).delete()
+
+    # Create new instances based on the current status
     if instance.status == "pending":
-        # Save data in PendingCustomerRequest
-        PendingCustomerRequest.objects.create(member=instance.member, images=instance.images)
+        PendingCustomerRequest.objects.create(member=instance.member, images=instance.images, status=instance.status)
     elif instance.status == "pending approval":
-        # Save data in PendingApprovalModel
-        PendingApprovalModel.objects.create(
-            member=instance.member, images=instance.images
-        )
+        PendingApprovalModel.objects.create(member=instance.member, images=instance.images, status=instance.status)
     elif instance.status == "approved":
-        # Save data in ApprovedCustomerRequest
-        ApprovedCustomerRequest.objects.create(member=instance.member, images=instance.images)
+        ApprovedCustomerRequest.objects.create(member=instance.member, images=instance.images, status=instance.status)
     elif instance.status == "rejected":
-        # Save data in RejectedCusomerRequest
-        RejectedCusomerRequest.objects.create(member=instance.member, images=instance.images)
+        RejectedCustomerRequest.objects.create(member=instance.member, images=instance.images, status=instance.status)
 
 
 class PendingCustomerRequest(models.Model):
     member = models.ForeignKey(Customer, on_delete=models.CASCADE)
     images = models.ImageField(upload_to="PendingCustomerRequest/%Y/%m/%d", blank=True)
+    status = models.CharField(max_length=20, choices=CustomerApplyRequest.STATUS_CHOICES, default="pending")
+    update_at = models.DateTimeField(auto_now=True)
+    
 
     def __str__(self):
-        return f"{self.member.member.first_name} {self.member.member.last_name}"
+        return f"{self.member.member.first_name} {self.member.member.last_name} - {self.get_status_display()}"
 
 
 class PendingApprovalModel(models.Model):
     member = models.ForeignKey(Customer, on_delete=models.CASCADE)
     images = models.ImageField(upload_to="PendingApprovalModel/%Y/%m/%d", blank=True)
+    status = models.CharField(max_length=20, choices=CustomerApplyRequest.STATUS_CHOICES, default="pending")
+    update_at = models.DateTimeField(auto_now=True)
+    
 
     def __str__(self):
-        return f"{self.member.member.first_name} {self.member.member.last_name}"
+        return f"{self.member.member.first_name} {self.member.member.last_name} - {self.get_status_display()}"
 
 
 class ApprovedCustomerRequest(models.Model):
     member = models.ForeignKey(Customer, on_delete=models.CASCADE)
     images = models.ImageField(upload_to="ApprovedCustomerRequest/%Y/%m/%d", blank=True)
+    status = models.CharField(max_length=20, choices=CustomerApplyRequest.STATUS_CHOICES, default="pending")
+    update_at = models.DateTimeField(auto_now=True)
+    
 
     def __str__(self):
-        return f"{self.member.member.first_name} {self.member.member.last_name}"
+        return f"{self.member.member.first_name} {self.member.member.last_name} - {self.get_status_display()}"
 
 
-class RejectedCusomerRequest(models.Model):
+class RejectedCustomerRequest(models.Model):
     member = models.ForeignKey(Customer, on_delete=models.CASCADE)
-    images = models.ImageField(upload_to="RejectedCusomerRequest/%Y/%m/%d", blank=True)
+    images = models.ImageField(upload_to="RejectedCustomerRequest/%Y/%m/%d", blank=True)
+    status = models.CharField(max_length=20, choices=CustomerApplyRequest.STATUS_CHOICES, default="pending")
+    update_at = models.DateTimeField(auto_now=True)
+    
 
     def __str__(self):
-        return f"{self.member.member.first_name} {self.member.member.last_name}"
+        return f"{self.member.member.first_name} {self.member.member.last_name} - {self.get_status_display()}"

@@ -35,4 +35,5 @@ urlpatterns = [
         ChangeStatusView.as_view(),
         name="change_status",
     ),
+    
 ]

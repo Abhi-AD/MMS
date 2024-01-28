@@ -18,3 +18,8 @@ class RequestRegistrationForm(forms.ModelForm):
     class Meta:
         model = CustomerApplyRequest
         fields = ['status']
+
+class CustomerApplyRequestForm(forms.ModelForm):
+    class Meta:
+        model = CustomerApplyRequest
+        fields = ['status']

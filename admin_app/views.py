@@ -1,13 +1,24 @@
-from django.shortcuts import render, redirect,get_object_or_404
-from django.views.generic import  View, ListView, CreateView
+# django libaries
+from django.shortcuts import render, redirect, get_object_or_404
+from django.views.generic import View, ListView, CreateView, UpdateView, TemplateView
+from django.urls import reverse_lazy
 from django.contrib.auth import authenticate, login, logout
 from django.views import View
 from django.contrib import messages
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
+
+# cutom import
 from admin_app.models import *
 from app.models import *
-from admin_app.forms import PaymentForm, RequestRegistrationForm
+from admin_app.forms import (
+    PaymentForm,
+    RequestRegistrationForm,
+    CustomerApplyRequestForm,
+)
+
+
 
 # create the view
 class MainView(View):
@@ -33,8 +44,6 @@ class MainView(View):
             return redirect("main")
 
 
-
-
 class PaymentListView(ListView):
     model = Payment
     template_name = "main/payment_list.html"
@@ -44,31 +53,33 @@ class PaymentListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        
+
         # Calculate total amount
-        total_amount = Payment.objects.aggregate(total_amount=models.Sum('amount'))['total_amount']
-        
+        total_amount = Payment.objects.aggregate(total_amount=models.Sum("amount"))[
+            "total_amount"
+        ]
+
         # Add total_amount to the context
-        context['total_amount'] = total_amount
+        context["total_amount"] = total_amount
 
         return context
-    
 
 
 class PaymentCreateView(CreateView):
-    template_name = 'main/payment_form.html'
+    template_name = "main/payment_form.html"
     form_class = PaymentForm
-    
+
     def get(self, request):
         form = self.form_class()
-        return render(request, self.template_name, {'form': form})
+        return render(request, self.template_name, {"form": form})
 
     def post(self, request):
         form = self.form_class(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             messages.success(
-                request, "Successfully submitted your query. We will transaction you soon "
+                request,
+                "Successfully submitted your query. We will transaction you soon ",
             )
             return redirect("payment_history")
         else:
@@ -79,175 +90,167 @@ class PaymentCreateView(CreateView):
                 {"form": form},
             )
 
-# views.py
-class ChangeStatusView(View):
-    template_name = 'status.html'
-    form_class = RequestRegistrationForm
-
-    def get(self, request, request_id):
-        customer_request = get_object_or_404(CustomerApplyRequest, id=request_id)
-        form = self.form_class(instance=customer_request)
-        return render(request, self.template_name, {'form': form, 'customer_request': customer_request})
-
-    def post(self, request, request_id):
-        customer_request = get_object_or_404(CustomerApplyRequest, id=request_id)
-        form = self.form_class(request.POST, instance=customer_request)
-        if form.is_valid():
-            form.save()
-            return redirect('cutomer_form_list')  # Redirect to a success page or any other page
-        return render(request, self.template_name, {'form': form, 'customer_request': customer_request})
-
-
-
 
 class AdminLogoutView(View):
     def get(self, request, *args, **kwargs):
         logout(request)
-        return redirect("main")  
+        return redirect("main")
+
+
+
 
 class CustomerFormListView(ListView):
     model = CustomerApplyRequest
-    template_name = 'main/All request/apply_list.html'
-    context_object_name = 'obj'  # Variable name used in the template
+    template_name = "main/All request/apply_list.html"
+    context_object_name = "obj"  # Variable name used in the template
+    paginate_by = 1  # Number of items to display per page
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)        
-        pending_count = CustomerApplyRequest.objects.filter(status='pending').count()
-        pending_approval_count = CustomerApplyRequest.objects.filter(status='pending_approval').count()
-        approved_count = CustomerApplyRequest.objects.filter(status='approved').count()
-        rejected_count = CustomerApplyRequest.objects.filter(status='rejected').count()
+        context = super().get_context_data(**kwargs)
+        total_request_count = CustomerApplyRequest.objects.all().count()
+        pending_count = PendingCustomerRequest.objects.all().count()
+        pending_approval_count = PendingApprovalModel.objects.all().count()
+        approved_count = ApprovedCustomerRequest.objects.all().count()
+        rejected_count = RejectedCustomerRequest.objects.all().count()
 
         # Add counts to the context
-        context['pending_count'] = pending_count
-        context['pending_approval_count'] = pending_approval_count
-        context['approved_count'] = approved_count
-        context['rejected_count'] = rejected_count
+        context["total_request_count"] = total_request_count
+        context["pending_count"] = pending_count
+        context["pending_approval_count"] = pending_approval_count
+        context["approved_count"] = approved_count
+        context["rejected_count"] = rejected_count
 
-        return context  
+        return context
 
 
 
-class ChangeStatusView(View):
-    template_name = 'main/All request/status.html'
-    form_class = RequestRegistrationForm
 
-    def get(self, request, request_id):
-        customer_request = get_object_or_404(CustomerApplyRequest, id=request_id)
-        form = self.form_class(instance=customer_request)
-        return render(request, self.template_name, {'form': form, 'customer_request': customer_request})
-
-    def post(self, request, request_id):
-        customer_request = get_object_or_404(CustomerApplyRequest, id=request_id)
-        form = self.form_class(request.POST, instance=customer_request)
-        if form.is_valid():
-            form.save()
-            return redirect('cutomer_form_list')  # Redirect to a success page or any other page
-        return render(request, self.template_name, {'form': form, 'customer_request': customer_request})
 
 
 
 class CustomerPendingFormListView(ListView):
     model = PendingCustomerRequest
-    template_name = 'main/All request/apply_list pending.html'
-    context_object_name = 'obj'  # Variable name used in the template
+    template_name = "main/All request/apply_list pending.html"
+    context_object_name = "obj"  # Variable name used in the template
+    paginate_by = 1  # Number of items to display per page
     
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
-        # Count the status types
-        pending_count = CustomerApplyRequest.objects.filter(status='pending').count()
-        pending_approval_count = CustomerApplyRequest.objects.filter(status='pending_approval').count()
-        approved_count = CustomerApplyRequest.objects.filter(status='approved').count()
-        rejected_count = CustomerApplyRequest.objects.filter(status='rejected').count()
+        total_request_count = CustomerApplyRequest.objects.all().count()
+        pending_count = PendingCustomerRequest.objects.all().count()
+        pending_approval_count = PendingApprovalModel.objects.all().count()
+        approved_count = ApprovedCustomerRequest.objects.all().count()
+        rejected_count = RejectedCustomerRequest.objects.all().count()
 
         # Add counts to the context
-        context['pending_count'] = pending_count
-        context['pending_approval_count'] = pending_approval_count
-        context['approved_count'] = approved_count
-        context['rejected_count'] = rejected_count
+        context["total_request_count"] = total_request_count
+        context["pending_count"] = pending_count
+        context["pending_approval_count"] = pending_approval_count
+        context["approved_count"] = approved_count
+        context["rejected_count"] = rejected_count
 
-        return context  
-
+        return context
 
 
 class CustomerPendingApprovalFormListView(ListView):
     model = PendingApprovalModel
-    template_name = 'main/All request/apply_list pending approval.html'
-    context_object_name = 'obj'  # Variable name used in the template
+    template_name = "main/All request/apply_list pending approval.html"
+    context_object_name = "obj"  # Variable name used in the template
+    paginate_by = 1  # Number of items to display per page
+    
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        
-        # Count the status types
-        pending_count = CustomerApplyRequest.objects.filter(status='pending').count()
-        pending_approval_count = CustomerApplyRequest.objects.filter(status='pending_approval').count()
-        approved_count = CustomerApplyRequest.objects.filter(status='approved').count()
-        rejected_count = CustomerApplyRequest.objects.filter(status='rejected').count()
+        total_request_count = CustomerApplyRequest.objects.all().count()
+        pending_count = PendingCustomerRequest.objects.all().count()
+        pending_approval_count = PendingApprovalModel.objects.all().count()
+        approved_count = ApprovedCustomerRequest.objects.all().count()
+        rejected_count = RejectedCustomerRequest.objects.all().count()
 
         # Add counts to the context
-        context['pending_count'] = pending_count
-        context['pending_approval_count'] = pending_approval_count
-        context['approved_count'] = approved_count
-        context['rejected_count'] = rejected_count
+        context["total_request_count"] = total_request_count
+        context["pending_count"] = pending_count
+        context["pending_approval_count"] = pending_approval_count
+        context["approved_count"] = approved_count
+        context["rejected_count"] = rejected_count
 
-        return context  
+        return context
 
 
 class CustomerApprovalFormListView(ListView):
     model = ApprovedCustomerRequest
-    template_name = 'main/All request/apply_list approval.html'
-    context_object_name = 'obj'  # Variable name used in the template
+    template_name = "main/All request/apply_list approval.html"
+    context_object_name = "obj"  # Variable name used in the template
+    paginate_by = 1  # Number of items to display per page
+    
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        
-        # Count the status types
-        pending_count = CustomerApplyRequest.objects.filter(status='pending').count()
-        pending_approval_count = CustomerApplyRequest.objects.filter(status='pending_approval').count()
-        approved_count = CustomerApplyRequest.objects.filter(status='approved').count()
-        rejected_count = CustomerApplyRequest.objects.filter(status='rejected').count()
+        total_request_count = CustomerApplyRequest.objects.all().count()
+        pending_count = PendingCustomerRequest.objects.all().count()
+        pending_approval_count = PendingApprovalModel.objects.all().count()
+        approved_count = ApprovedCustomerRequest.objects.all().count()
+        rejected_count = RejectedCustomerRequest.objects.all().count()
 
         # Add counts to the context
-        context['pending_count'] = pending_count
-        context['pending_approval_count'] = pending_approval_count
-        context['approved_count'] = approved_count
-        context['rejected_count'] = rejected_count
+        context["total_request_count"] = total_request_count
+        context["pending_count"] = pending_count
+        context["pending_approval_count"] = pending_approval_count
+        context["approved_count"] = approved_count
+        context["rejected_count"] = rejected_count
 
-        return context  
-
-
+        return context
 
 
 class CustomerRejectFormListView(ListView):
-    model = RejectedCusomerRequest
-    template_name = 'main/All request/apply_list reject.html'
-    context_object_name = 'obj'  # Variable name used in the template
+    model = RejectedCustomerRequest
+    template_name = "main/All request/apply_list reject.html"
+    context_object_name = "obj"  # Variable name used in the template
+    paginate_by = 1  # Number of items to display per page
+    
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        
-        # Count the status types
-        pending_count = CustomerApplyRequest.objects.filter(status='pending').count()
-        pending_approval_count = CustomerApplyRequest.objects.filter(status='pending_approval').count()
-        approved_count = CustomerApplyRequest.objects.filter(status='approved').count()
-        rejected_count = CustomerApplyRequest.objects.filter(status='rejected').count()
+        total_request_count = CustomerApplyRequest.objects.all().count()
+        pending_count = PendingCustomerRequest.objects.all().count()
+        pending_approval_count = PendingApprovalModel.objects.all().count()
+        approved_count = ApprovedCustomerRequest.objects.all().count()
+        rejected_count = RejectedCustomerRequest.objects.all().count()
 
         # Add counts to the context
-        context['pending_count'] = pending_count
-        context['pending_approval_count'] = pending_approval_count
-        context['approved_count'] = approved_count
-        context['rejected_count'] = rejected_count
+        context["total_request_count"] = total_request_count
+        context["pending_count"] = pending_count
+        context["pending_approval_count"] = pending_approval_count
+        context["approved_count"] = approved_count
+        context["rejected_count"] = rejected_count
 
-        return context  
-
-
-
+        return context
 
 
+class ChangeStatusView(View):
+    template_name = "main/All request/status.html"
+    form_class = RequestRegistrationForm
 
+    def get(self, request, request_id):
+        customer_request = get_object_or_404(CustomerApplyRequest, id=request_id)
+        form = self.form_class(instance=customer_request)
+        return render(
+            request,
+            self.template_name,
+            {"form": form, "customer_request": customer_request},
+        )
 
-
-
-
-
-
+    def post(self, request, request_id):
+        customer_request = get_object_or_404(CustomerApplyRequest, id=request_id)
+        form = self.form_class(request.POST, instance=customer_request)
+        if form.is_valid():
+            form.save()
+            return redirect(
+                "cutomer_form_list"
+            )  # Redirect to a success page or any other page
+        return render(
+            request,
+            self.template_name,
+            {"form": form, "customer_request": customer_request},
+        )
