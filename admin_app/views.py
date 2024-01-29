@@ -1,6 +1,6 @@
 # django libaries
 from django.shortcuts import render, redirect, get_object_or_404
-from django.views.generic import View, ListView, CreateView, UpdateView, TemplateView
+from django.views.generic import View, ListView, CreateView, DetailView, DeleteView
 from django.urls import reverse_lazy
 from django.contrib.auth import authenticate, login, logout
 from django.views import View
@@ -10,6 +10,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 # cutom import
 from admin_app.models import *
+from app.models import *
 from app.models import *
 from admin_app.forms import (
     PaymentForm,
@@ -292,6 +293,21 @@ class AllCustomerListView(ListView):
 
     def dispatch(self, request, *args, **kwargs):
         if not self.request.user.is_superuser:
+            return redirect("main")
+        return super().dispatch(request, *args, **kwargs)
+
+
+
+
+
+class AdminCustomerDetailView(DetailView):
+    model = Customer
+    template_name = "main/customer_profile_view.html"
+    context_object_name = "customer"
+    pk_url_kwarg = "pk"
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_superuser:
             return redirect("main")
         return super().dispatch(request, *args, **kwargs)
 

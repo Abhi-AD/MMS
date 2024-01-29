@@ -41,6 +41,7 @@ class CustomerProfileEditForm(forms.ModelForm):
     class Meta:
         model = Customer
         fields = [
+            'images',
             'street_address',
             'street_address2',
             'city',

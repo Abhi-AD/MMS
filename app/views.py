@@ -130,11 +130,12 @@ class RegistrationView(FormView):
                 Customer.objects.create(
                     member=user, customercode=customercode, images=images
                 )
+                messages.success(request, "Create a new account ...!")
                 return super().form_valid(form)
             except Exception as e:
                 # Handle any errors here
                 # You can add error messages to the form or use a different approach to display errors
-                form.add_error(None, "An error occurred during registration.")
+                messages.success(request, "An error occurred during registration.")
                 return self.form_invalid(form)
         else:
             return self.form_invalid(form)
@@ -226,6 +227,7 @@ class ChangePasswordView(LoginRequiredMixin, View):
 
 from django.http import Http404
 
+
 class CustomerProfileEditView(LoginRequiredMixin, View):
     template_name = "app/customer_profile_edit.html"
     login_url = "/user_login/"
@@ -234,24 +236,24 @@ class CustomerProfileEditView(LoginRequiredMixin, View):
         try:
             customer = get_object_or_404(Customer, member=request.user)
             form = CustomerProfileEditForm(instance=customer)
-            return render(request, self.template_name, {"form": form, 'customer':customer})
+            return render(
+                request, self.template_name, {"form": form, "customer": customer}
+            )
         except Http404:
             messages.error(request, "Customer not found.")
             return redirect("home")
 
     def post(self, request, *args, **kwargs):
         customer = get_object_or_404(Customer, member=request.user)
-        form = CustomerProfileEditForm(request.POST, instance=customer)
+        form = CustomerProfileEditForm(request.POST, request.FILES, instance=customer)
 
         if form.is_valid():
             form.save()
             messages.success(request, "Profile updated successfully.")
-            return redirect('profile')
+            return redirect("profile")
         else:
             messages.error(request, "Please correct the errors below.")
 
-        return render(request, self.template_name, {"form": form ,'customer':customer})
-
-
+        return render(request, self.template_name, {"form": form, "customer": customer})
 
 

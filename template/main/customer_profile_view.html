@@ -1,0 +1,101 @@
+{% extends "main/base.html" %}
+{% block content %}
+{% load static %}
+<h2 class="p-2 text-secondary">Customer Details</h2>
+<section style="background-color: #eee;">
+     <div class="container py-5">
+          <form action="" method="post" name="signup">
+               {% csrf_token %}
+               <div class="row">
+                    <div class="col-lg-4">
+                         <div class="card mb-4">
+                              <div class="card-body text-center">
+                                   <!-- <img src="{{customer.feature_image.url }}" alt="avatar"
+                                        class="rounded-circle img-fluid" style="width: 550px;"> -->
+                                   <img src="{{customer.images.url }}" alt="{{freelancer_post.title}}" height="380px">
+                                   <h5 class="my-3">{{customer.member.first_name}} {{customer.member.last_name}}</h5>
+                                   <p class="text-muted mb-1">Customer Code: {{customer.customercode}}</p>
+                                   <p class="text-muted mb-4">Customer Roll Number: {{customer.rollnumber}}</p>
+                              </div>
+                         </div>
+                    </div>
+                    <div class="col-lg-8">
+                         <div class="card mb-4">
+                              <div class="card-body">
+                                   <div class="row">
+                                        <div class="col-sm-3">
+                                             <p class="mb-0">Full Name</p>
+                                        </div>
+                                        <div class="col-sm-9">
+                                             <p class="text-muted mb-0">{{customer.member.first_name}}
+                                                  {{customer.member.last_name}}</p>
+                                        </div>
+                                   </div>
+                                   <hr>
+                                   <div class="row">
+                                        <div class="col-sm-3">
+                                             <p class="mb-0">Customer Code</p>
+                                        </div>
+                                        <div class="col-sm-9">
+                                             <p class="text-muted mb-0">{{customer.customercode}}</p>
+                                        </div>
+                                   </div>
+                                   <hr>
+                                   <div class="row">
+                                        <div class="col-sm-3">
+                                             <p class="mb-0">Email</p>
+                                        </div>
+                                        <div class="col-sm-9">
+                                             <p class="text-muted mb-0">{{customer.member.username}}</p>
+                                        </div>
+                                   </div>
+                                   <hr>
+                                   <div class="row">
+                                        <div class="col-sm-3">
+                                             <p class="mb-0">Contact</p>
+                                        </div>
+                                        <div class="col-sm-9">
+                                             <p class="text-muted mb-0">
+                                                  {{customer.contact}}<br>{{customer.emergency_contact}}<br>{{customer.emergency_contact2}}
+                                             </p>
+                                        </div>
+                                   </div>
+                                   <hr>
+                                   <div class="row">
+                                        <div class="col-sm-3">
+                                             <p class="mb-0">Address</p>
+                                        </div>
+                                        <div class="col-sm-9">
+                                             <p class="text-muted mb-0">
+                                                  {{customer.street_address}}<br>{{customer.street_address2}}</p>
+                                        </div>
+                                   </div>
+                                   <hr>
+                                   <div class="row">
+                                        <div class="col-sm-3">
+                                             <p class="mb-0">Customer City</p>
+                                        </div>
+                                        <div class="col-sm-9">
+                                             <p class="text-muted mb-0">{{customer.city}}<br>{{customer.state_province}}
+                                             </p>
+                                        </div>
+                                   </div>
+                                   <hr>
+                                   <div class="row">
+                                        <div class="col-sm-3">
+                                             <p class="mb-0">Join Date</p>
+                                        </div>
+                                        <div class="col-sm-9">
+                                             <p class="text-muted mb-0">{{customer.date_of_signature}}</p>
+                                        </div>
+                                   </div>
+                              </div>
+                         </div>
+                         <a href="{% url 'all_customer' %}" class="btn btn-secondary">Back</a>
+                    </div>
+               </div>
+
+          </form>
+     </div>
+</section>
+{% endblock content %}
