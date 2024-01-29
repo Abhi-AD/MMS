@@ -27,9 +27,9 @@ from django.db.models import Count
 from app.models import *
 from app.forms import (
     RegistrationForm,
-    UserRegisterForm,
     UserLoginForm,
     CustomerRegistrationForm,
+    CustomerApplyRequestForm,
 )
 from django.views.generic.edit import FormView
 from django.contrib.auth.models import User
@@ -37,13 +37,14 @@ from django.contrib.auth.models import User
 # *******************************************************************************************************
 
 
-
 class HomeView(LoginRequiredMixin, TemplateView):
     template_name = "app/home.html"
     login_url = "/user_login/"
 
     def get(self, request, *args, **kwargs):
-        messages.success(self.request, f'User LogIn Successfully {request.user.username}...!')
+        messages.success(
+            self.request, f"User LogIn Successfully {request.user.username}...!"
+        )
         return super().get(request, *args, **kwargs)
 
 
@@ -69,7 +70,6 @@ class FormRegister(LoginRequiredMixin, CreateView):
                 self.template_name,
                 {"form": form},
             )
-
 
 
 class UserLoginView(View):
@@ -104,10 +104,8 @@ class UserLogoutView(View):
     def get(self, request, *args, **kwargs):
         username = request.user.username  # Get the username before logging out
         logout(request)
-        messages.success(request, f'User LogOut Successfully {username}...!')
+        messages.success(request, f"User LogOut Successfully {username}...!")
         return redirect("home")
-
-
 
 
 class RegistrationView(FormView):
@@ -140,7 +138,9 @@ class RegistrationView(FormView):
                 )
 
                 # Create related EmployeeDetail instance
-                Customer.objects.create(member=user, customercode=customercode, images=images)
+                Customer.objects.create(
+                    member=user, customercode=customercode, images=images
+                )
                 return super().form_valid(form)
             except Exception as e:
                 # Handle any errors here
@@ -151,6 +151,34 @@ class RegistrationView(FormView):
             return self.form_invalid(form)
 
 
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
+from .models import Customer, CustomerApplyRequest
+from .forms import CustomerApplyRequestForm
 
+class SubmitApplicationView(View):
+    template_name = "app/register.html"
+    form_class = CustomerApplyRequestForm
 
+    def get(self, request, *args, **kwargs):
+        form = self.form_class()
+        return render(request, self.template_name, {"form": form})
+
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST, request.FILES)
+        if form.is_valid():
+            try:
+                customer = Customer.objects.get(member=request.user)
+            except Customer.DoesNotExist:
+                messages.success(request, f"Customer Not Apply Request Successfully {request.user.username}...!,")
+            application = form.save(commit=False)
+            application.member = customer
+            messages.success(request, f"Customer Apply Request Successfully {request.user.username}...!,")
+            application.save()
+            return redirect("register")  # Redirect to a success page
+        else:
+            # Print form errors to the console for debugging
+            print(form.errors)
+
+        return render(request, self.template_name, {"form": form})
 
