@@ -8,7 +8,6 @@ from django.contrib import messages
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
-
 # cutom import
 from admin_app.models import *
 from app.models import *
@@ -17,7 +16,6 @@ from admin_app.forms import (
     RequestRegistrationForm,
     CustomerApplyRequestForm,
 )
-
 
 
 # create the view
@@ -97,13 +95,17 @@ class AdminLogoutView(View):
         return redirect("main")
 
 
-
-
 class CustomerFormListView(ListView):
     model = CustomerApplyRequest
     template_name = "main/All request/apply_list.html"
     context_object_name = "obj"  # Variable name used in the template
-    paginate_by = 1  # Number of items to display per page
+    paginate_by = 2  # Number of items to display per page
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        for i, obj in enumerate(queryset, start=1):
+            obj.serial_number = i
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -123,17 +125,17 @@ class CustomerFormListView(ListView):
         return context
 
 
-
-
-
-
-
 class CustomerPendingFormListView(ListView):
     model = PendingCustomerRequest
     template_name = "main/All request/apply_list pending.html"
     context_object_name = "obj"  # Variable name used in the template
-    paginate_by = 1  # Number of items to display per page
-    
+    paginate_by = 2  # Number of items to display per page
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        for i, obj in enumerate(queryset, start=1):
+            obj.serial_number = i
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -157,8 +159,13 @@ class CustomerPendingApprovalFormListView(ListView):
     model = PendingApprovalModel
     template_name = "main/All request/apply_list pending approval.html"
     context_object_name = "obj"  # Variable name used in the template
-    paginate_by = 1  # Number of items to display per page
-    
+    paginate_by = 2  # Number of items to display per page
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        for i, obj in enumerate(queryset, start=1):
+            obj.serial_number = i
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -182,8 +189,13 @@ class CustomerApprovalFormListView(ListView):
     model = ApprovedCustomerRequest
     template_name = "main/All request/apply_list approval.html"
     context_object_name = "obj"  # Variable name used in the template
-    paginate_by = 1  # Number of items to display per page
-    
+    paginate_by = 2  # Number of items to display per page
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        for i, obj in enumerate(queryset, start=1):
+            obj.serial_number = i
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -207,8 +219,13 @@ class CustomerRejectFormListView(ListView):
     model = RejectedCustomerRequest
     template_name = "main/All request/apply_list reject.html"
     context_object_name = "obj"  # Variable name used in the template
-    paginate_by = 1  # Number of items to display per page
-    
+    paginate_by = 2  # Number of items to display per page
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        for i, obj in enumerate(queryset, start=1):
+            obj.serial_number = i
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
