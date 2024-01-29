@@ -7,7 +7,5 @@
      <button type="submit" class="btn btn-success">Login</button>
      <a href="{% url 'user_register' %}" class="btn btn-primary">Signup</a>
 </form>
-{% if error_message %}
-<p>{{ error_message }}</p>
-{% endif %}
+
 {% endblock %}

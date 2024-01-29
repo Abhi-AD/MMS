@@ -33,6 +33,7 @@ from app.forms import (
 )
 from django.views.generic.edit import FormView
 from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist,ValidationError
 
 # *******************************************************************************************************
 
@@ -70,10 +71,14 @@ class UserLoginView(View):
                 )
                 return redirect("home")
             else:
+                messages.success(
+                    self.request,
+                    f"Invalid username or password...!",
+                )
                 return render(
                     request,
                     self.template_name,
-                    {"form": form, "error_message": "Invalid username or password."},
+                    {"form": form},
                 )
 
         return render(request, self.template_name, {"form": form})
@@ -121,7 +126,7 @@ class RegistrationView(FormView):
                     last_name=last_name,
                 )
 
-                # Create related EmployeeDetail instance
+                # Create related Customer instance
                 Customer.objects.create(
                     member=user, customercode=customercode, images=images
                 )
@@ -136,9 +141,10 @@ class RegistrationView(FormView):
 
 
 # apply request
-class SubmitApplicationView(View):
+class SubmitApplicationView(LoginRequiredMixin, View):
     template_name = "app/register.html"
     form_class = CustomerApplyRequestForm
+    login_url = "/user_login/"
 
     def get(self, request, *args, **kwargs):
         form = self.form_class()
@@ -167,3 +173,107 @@ class SubmitApplicationView(View):
             print(form.errors)
 
         return render(request, self.template_name, {"form": form})
+
+
+# profile view
+class UserProfileView(LoginRequiredMixin, View):
+    template_name = "app/customer_profile.html"
+    login_url = "/user_login/"
+
+    def get(self, request, *args, **kwargs):
+        try:
+            # Assuming Customer model has a ForeignKey to the User model named 'member'
+            user_profile = Customer.objects.get(member=request.user)
+            context = {"user_profile": user_profile}
+            return render(request, self.template_name, context)
+        except ObjectDoesNotExist:
+            messages.success(request, "You are not Customer...!")
+            return redirect("home")
+
+
+# change password
+class ChangePasswordView(LoginRequiredMixin,View):
+    template_name = "app/customer_change_password.html"
+    login_url = '/user_login/'
+
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name)
+
+    def post(self, request, *args, **kwargs):
+        error = ""
+        user = request.user
+
+        currentpassword = request.POST.get("currentpassword")
+        newpassword = request.POST.get("newpassword")
+
+        try:
+            if user.check_password(currentpassword):
+                user.set_password(newpassword)
+                user.save()
+                error = "no"
+                messages.success(request, 'Change Password Successfully')
+                return redirect('user_login')
+            else:
+                error = "not"
+        except Exception as e:
+            print(e)
+            error = "yes"
+
+        return render(request, self.template_name, {'error': error})
+
+
+
+
+# profil edit
+
+class CustomerProfileEditView(LoginRequiredMixin,View):
+    template_name = "app/customer_profile_edit.html"
+    login_url = "/user_login/"
+
+    def get(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect("login")  # Update to your login URL
+        customer = get_object_or_404(Customer, member=request.user)
+        return render(request, self.template_name, {'customer': customer})
+
+    def post(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect("login")  # Update to your login URL
+        error = ""
+        customer = get_object_or_404(Customer, member=request.user)
+        form_data = request.POST
+
+        # Validate form data
+        if not form_data.get("street_address") or not form_data.get("city"):
+            error = "yes"
+        else:
+            # Update customer fields
+            customer.street_address = form_data["street_address"]
+            customer.street_address2 = form_data["street_address2"]
+            customer.city = form_data["city"]
+            customer.state_province = form_data["state_province"]
+            customer.contact = form_data["contact"]
+            customer.emergency_contact = form_data["emergency_contact"]
+            customer.emergency_contact2 = form_data["emergency_contact2"]
+
+            # Save changes
+            try:
+                customer.save()
+                error = "no"
+            except (ValidationError, ObjectDoesNotExist) as e:
+                print(e)
+                error = "yes"
+
+        return render(request, self.template_name, {'customer': customer, 'error': error})
+
+
+
+
+
+
+
+
+
+
+
+

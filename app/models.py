@@ -4,7 +4,9 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.db import transaction
+
 # Create your models here.
+
 
 class Member(models.Model):
     name = models.CharField(max_length=255)
@@ -72,21 +74,30 @@ def handle_customer_apply_request(sender, instance, **kwargs):
 
     # Create new instances based on the current status
     if instance.status == "pending":
-        PendingCustomerRequest.objects.create(member=instance.member, images=instance.images, status=instance.status)
+        PendingCustomerRequest.objects.create(
+            member=instance.member, images=instance.images, status=instance.status
+        )
     elif instance.status == "pending approval":
-        PendingApprovalModel.objects.create(member=instance.member, images=instance.images, status=instance.status)
+        PendingApprovalModel.objects.create(
+            member=instance.member, images=instance.images, status=instance.status
+        )
     elif instance.status == "approved":
-        ApprovedCustomerRequest.objects.create(member=instance.member, images=instance.images, status=instance.status)
+        ApprovedCustomerRequest.objects.create(
+            member=instance.member, images=instance.images, status=instance.status
+        )
     elif instance.status == "rejected":
-        RejectedCustomerRequest.objects.create(member=instance.member, images=instance.images, status=instance.status)
+        RejectedCustomerRequest.objects.create(
+            member=instance.member, images=instance.images, status=instance.status
+        )
 
 
 class PendingCustomerRequest(models.Model):
     member = models.ForeignKey(Customer, on_delete=models.CASCADE)
     images = models.ImageField(upload_to="PendingCustomerRequest/%Y/%m/%d", blank=True)
-    status = models.CharField(max_length=20, choices=CustomerApplyRequest.STATUS_CHOICES, default="pending")
+    status = models.CharField(
+        max_length=20, choices=CustomerApplyRequest.STATUS_CHOICES, default="pending"
+    )
     update_at = models.DateTimeField(auto_now=True)
-    
 
     def __str__(self):
         return f"{self.member.member.first_name} {self.member.member.last_name} - {self.get_status_display()}"
@@ -95,9 +106,10 @@ class PendingCustomerRequest(models.Model):
 class PendingApprovalModel(models.Model):
     member = models.ForeignKey(Customer, on_delete=models.CASCADE)
     images = models.ImageField(upload_to="PendingApprovalModel/%Y/%m/%d", blank=True)
-    status = models.CharField(max_length=20, choices=CustomerApplyRequest.STATUS_CHOICES, default="pending")
+    status = models.CharField(
+        max_length=20, choices=CustomerApplyRequest.STATUS_CHOICES, default="pending"
+    )
     update_at = models.DateTimeField(auto_now=True)
-    
 
     def __str__(self):
         return f"{self.member.member.first_name} {self.member.member.last_name} - {self.get_status_display()}"
@@ -106,9 +118,10 @@ class PendingApprovalModel(models.Model):
 class ApprovedCustomerRequest(models.Model):
     member = models.ForeignKey(Customer, on_delete=models.CASCADE)
     images = models.ImageField(upload_to="ApprovedCustomerRequest/%Y/%m/%d", blank=True)
-    status = models.CharField(max_length=20, choices=CustomerApplyRequest.STATUS_CHOICES, default="pending")
+    status = models.CharField(
+        max_length=20, choices=CustomerApplyRequest.STATUS_CHOICES, default="pending"
+    )
     update_at = models.DateTimeField(auto_now=True)
-    
 
     def __str__(self):
         return f"{self.member.member.first_name} {self.member.member.last_name} - {self.get_status_display()}"
@@ -117,13 +130,10 @@ class ApprovedCustomerRequest(models.Model):
 class RejectedCustomerRequest(models.Model):
     member = models.ForeignKey(Customer, on_delete=models.CASCADE)
     images = models.ImageField(upload_to="RejectedCustomerRequest/%Y/%m/%d", blank=True)
-    status = models.CharField(max_length=20, choices=CustomerApplyRequest.STATUS_CHOICES, default="pending")
+    status = models.CharField(
+        max_length=20, choices=CustomerApplyRequest.STATUS_CHOICES, default="pending"
+    )
     update_at = models.DateTimeField(auto_now=True)
-    
 
     def __str__(self):
         return f"{self.member.member.first_name} {self.member.member.last_name} - {self.get_status_display()}"
-
-
-
-
