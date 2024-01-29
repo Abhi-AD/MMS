@@ -99,6 +99,7 @@ class CustomerFormListView(ListView):
     model = CustomerApplyRequest
     template_name = "main/All request/apply_list.html"
     context_object_name = "obj"  # Variable name used in the template
+    queryset = CustomerApplyRequest.objects.all().order_by("-update_at")
     paginate_by = 2  # Number of items to display per page
 
     def get_queryset(self):
@@ -129,6 +130,7 @@ class CustomerPendingFormListView(ListView):
     model = PendingCustomerRequest
     template_name = "main/All request/apply_list pending.html"
     context_object_name = "obj"  # Variable name used in the template
+    queryset = PendingCustomerRequest.objects.all().order_by("-update_at")
     paginate_by = 2  # Number of items to display per page
 
     def get_queryset(self):
@@ -159,6 +161,7 @@ class CustomerPendingApprovalFormListView(ListView):
     model = PendingApprovalModel
     template_name = "main/All request/apply_list pending approval.html"
     context_object_name = "obj"  # Variable name used in the template
+    queryset = PendingApprovalModel.objects.all().order_by("-update_at")
     paginate_by = 2  # Number of items to display per page
 
     def get_queryset(self):
@@ -189,6 +192,7 @@ class CustomerApprovalFormListView(ListView):
     model = ApprovedCustomerRequest
     template_name = "main/All request/apply_list approval.html"
     context_object_name = "obj"  # Variable name used in the template
+    queryset = ApprovedCustomerRequest.objects.all().order_by("-update_at")
     paginate_by = 2  # Number of items to display per page
 
     def get_queryset(self):
@@ -219,6 +223,7 @@ class CustomerRejectFormListView(ListView):
     model = RejectedCustomerRequest
     template_name = "main/All request/apply_list reject.html"
     context_object_name = "obj"  # Variable name used in the template
+    queryset = RejectedCustomerRequest.objects.all().order_by("-update_at")
     paginate_by = 2  # Number of items to display per page
 
     def get_queryset(self):
@@ -271,3 +276,7 @@ class ChangeStatusView(View):
             self.template_name,
             {"form": form, "customer_request": customer_request},
         )
+
+
+
+

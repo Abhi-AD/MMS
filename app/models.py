@@ -123,3 +123,7 @@ class RejectedCustomerRequest(models.Model):
 
     def __str__(self):
         return f"{self.member.member.first_name} {self.member.member.last_name} - {self.get_status_display()}"
+
+
+
+
