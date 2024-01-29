@@ -4,10 +4,6 @@ from app.models import (
     CustomerApplyRequest
 )
 
-class RegistrationForm(forms.ModelForm):
-    class Meta:
-        model = CustomerApplyRequest
-        fields = ["member", "images"]
 
 
 
@@ -39,3 +35,17 @@ class CustomerRegistrationForm(forms.Form):
     confirm_password = forms.CharField(widget=forms.PasswordInput)
     images = forms.FileField() 
     
+
+
+class CustomerProfileEditForm(forms.ModelForm):
+    class Meta:
+        model = Customer
+        fields = [
+            'street_address',
+            'street_address2',
+            'city',
+            'state_province',
+            'contact',
+            'emergency_contact',
+            'emergency_contact2',
+        ]

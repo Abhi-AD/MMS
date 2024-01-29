@@ -1,0 +1,60 @@
+{% extends "main/base.html" %}
+{% load static %}
+{% block content %}
+{% if user.is_superuser %}
+
+<div class="table-responsive text-capitalize">
+
+     <table class="table  table-hover table-bordered">
+          <thead class="table-primary">
+               <tr>
+                    <th>S.N</th>
+                    <th>Roll Number</th>
+                    <th>Customer Code</th>
+                    <th>Name</th>
+                    <th>Address</th>
+                    <th>Contact</th>
+                    <th>Join Date</th>
+                    <th>Pofile</th>
+                    <th>Edit</th>
+               </tr>
+          </thead>
+          <tbody>
+               {% for obj in customer %}
+          <tbody>
+               <style>
+                    .img-container:hover img {
+                         transform: scale(1.5);
+                    }
+               </style>
+               <tr>
+                    <td>{{ obj.serial_number }}</td>
+                    <td>{{ obj.rollnumber }}</td>
+                    <td>{{obj.customercode}}</td>
+                    <td>{{obj.member.first_name}} {{obj.member.last_name}}</td>
+                    <td>{{obj.street_address}}</td>
+                    <td>{{obj.contact}}</td>
+                    <td>{{obj.date_of_signature}}</td>
+                    <td>
+                         <div class="img-container">
+                              <img src="{{obj.images.url}}" alt="{{ obj.category}}" class="img-thumbnail"
+                                   style="max-width: 100px;">
+                         </div>
+                    </td>
+                    <td> <a href="" class="btn btn-primary">View</a>
+                         <a href="" class="btn btn-danger" onclick="return confirm('Are you sure?')">Delete</a>
+                    </td>
+               </tr>
+               <!-- Add more rows as needed -->
+          </tbody>
+          {% endfor %}
+          </tbody>
+     </table>
+</div>
+{% include 'pagination.html' %}
+
+{% else %}
+{% include 'main/login.html' %}
+
+{% endif %}
+{% endblock content %}

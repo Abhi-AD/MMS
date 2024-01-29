@@ -26,14 +26,14 @@ from django.contrib import messages
 from django.db.models import Count
 from app.models import *
 from app.forms import (
-    RegistrationForm,
+    CustomerProfileEditForm,
     UserLoginForm,
     CustomerRegistrationForm,
     CustomerApplyRequestForm,
 )
 from django.views.generic.edit import FormView
 from django.contrib.auth.models import User
-from django.core.exceptions import ObjectDoesNotExist,ValidationError
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 
 # *******************************************************************************************************
 
@@ -192,9 +192,9 @@ class UserProfileView(LoginRequiredMixin, View):
 
 
 # change password
-class ChangePasswordView(LoginRequiredMixin,View):
+class ChangePasswordView(LoginRequiredMixin, View):
     template_name = "app/customer_change_password.html"
-    login_url = '/user_login/'
+    login_url = "/user_login/"
 
     def get(self, request, *args, **kwargs):
         return render(request, self.template_name)
@@ -211,68 +211,46 @@ class ChangePasswordView(LoginRequiredMixin,View):
                 user.set_password(newpassword)
                 user.save()
                 error = "no"
-                messages.success(request, 'Change Password Successfully')
-                return redirect('user_login')
+                messages.success(request, "Change Password Successfully")
+                return redirect("user_login")
             else:
                 error = "not"
         except Exception as e:
             print(e)
             error = "yes"
 
-        return render(request, self.template_name, {'error': error})
-
-
+        return render(request, self.template_name, {"error": error})
 
 
 # profil edit
 
-class CustomerProfileEditView(LoginRequiredMixin,View):
+from django.http import Http404
+
+class CustomerProfileEditView(LoginRequiredMixin, View):
     template_name = "app/customer_profile_edit.html"
     login_url = "/user_login/"
 
     def get(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return redirect("login")  # Update to your login URL
-        customer = get_object_or_404(Customer, member=request.user)
-        return render(request, self.template_name, {'customer': customer})
+        try:
+            customer = get_object_or_404(Customer, member=request.user)
+            form = CustomerProfileEditForm(instance=customer)
+            return render(request, self.template_name, {"form": form, 'customer':customer})
+        except Http404:
+            messages.error(request, "Customer not found.")
+            return redirect("home")
 
     def post(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return redirect("login")  # Update to your login URL
-        error = ""
         customer = get_object_or_404(Customer, member=request.user)
-        form_data = request.POST
+        form = CustomerProfileEditForm(request.POST, instance=customer)
 
-        # Validate form data
-        if not form_data.get("street_address") or not form_data.get("city"):
-            error = "yes"
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Profile updated successfully.")
+            return redirect('profile')
         else:
-            # Update customer fields
-            customer.street_address = form_data["street_address"]
-            customer.street_address2 = form_data["street_address2"]
-            customer.city = form_data["city"]
-            customer.state_province = form_data["state_province"]
-            customer.contact = form_data["contact"]
-            customer.emergency_contact = form_data["emergency_contact"]
-            customer.emergency_contact2 = form_data["emergency_contact2"]
+            messages.error(request, "Please correct the errors below.")
 
-            # Save changes
-            try:
-                customer.save()
-                error = "no"
-            except (ValidationError, ObjectDoesNotExist) as e:
-                print(e)
-                error = "yes"
-
-        return render(request, self.template_name, {'customer': customer, 'error': error})
-
-
-
-
-
-
-
-
+        return render(request, self.template_name, {"form": form ,'customer':customer})
 
 
 

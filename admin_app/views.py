@@ -278,5 +278,21 @@ class ChangeStatusView(View):
         )
 
 
+class AllCustomerListView(ListView):
+    model = Customer
+    template_name = "main/all_customer.html"
+    context_object_name = "customer"
+    paginate_by = 1  # Set the number of items to display per page
+
+    def get_queryset(self):
+        queryset = Customer.objects.all()
+        for i, obj in enumerate(queryset, start=1):
+            obj.serial_number = i
+        return queryset
+
+    def dispatch(self, request, *args, **kwargs):
+        if not self.request.user.is_superuser:
+            return redirect("main")
+        return super().dispatch(request, *args, **kwargs)
 
 
