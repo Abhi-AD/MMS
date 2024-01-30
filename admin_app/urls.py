@@ -37,6 +37,18 @@ urlpatterns = [
         name="change_status",
     ),
     path(
-        "customer/<int:pk>/", AdminCustomerDetailView.as_view(), name="admin_customer_view_detail"
+        "customer/<int:pk>/",
+        AdminCustomerDetailView.as_view(),
+        name="admin_customer_view_detail",
     ),
+    path(
+        "admin_password_change/",
+        AdminPasswordChangeView.as_view(),
+        name="admin_password_change",
+    ),
+    path("admin_profile/", AdminProfileView.as_view(), name="admin_profile"),
+    path("create_superuser/", CreateSuperuserView.as_view(), name="create_superuser"),
+    path("superuser_list/", SuperuserListView.as_view(), name="superuser_list"),
+    path('delete_super_account/', DeleteSuperAccountView.as_view(), name='delete_super_account'),
+    
 ]

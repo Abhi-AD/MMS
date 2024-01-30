@@ -1,0 +1,14 @@
+{% extends "main/base.html" %}
+{% load static %}
+{% block content %}
+
+<h2>Delete Account</h2>
+<form method="post" action="{% url 'delete_account' %}">
+    {% csrf_token %}
+    <p>Are you sure you want to delete your account? This action cannot be undone.</p>
+
+    <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure Confirm?')">Delete Account</button>
+    <a href="{% url 'profile' %}" class="btn btn-secondary">Back</a>
+
+</form>
+{% endblock content %}

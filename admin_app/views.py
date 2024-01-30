@@ -6,7 +6,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.views import View
 from django.contrib import messages
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-
+from django.contrib.auth.views import PasswordChangeView
 
 # cutom import
 from admin_app.models import *
@@ -16,6 +16,7 @@ from admin_app.forms import (
     PaymentForm,
     RequestRegistrationForm,
     CustomerApplyRequestForm,
+    SuperuserCreationForm,
 )
 
 
@@ -43,6 +44,7 @@ class MainView(View):
             return redirect("main")
 
 
+# all payment history
 class PaymentListView(ListView):
     model = Payment
     template_name = "main/payment_list.html"
@@ -64,6 +66,7 @@ class PaymentListView(ListView):
         return context
 
 
+# payment create
 class PaymentCreateView(CreateView):
     template_name = "main/payment_form.html"
     form_class = PaymentForm
@@ -90,12 +93,14 @@ class PaymentCreateView(CreateView):
             )
 
 
+# admin logout
 class AdminLogoutView(View):
     def get(self, request, *args, **kwargs):
         logout(request)
         return redirect("main")
 
 
+# cutomer request list
 class CustomerFormListView(ListView):
     model = CustomerApplyRequest
     template_name = "main/All request/apply_list.html"
@@ -127,6 +132,7 @@ class CustomerFormListView(ListView):
         return context
 
 
+# cutomer pending request list
 class CustomerPendingFormListView(ListView):
     model = PendingCustomerRequest
     template_name = "main/All request/apply_list pending.html"
@@ -158,6 +164,7 @@ class CustomerPendingFormListView(ListView):
         return context
 
 
+# cutomer pending approval request list
 class CustomerPendingApprovalFormListView(ListView):
     model = PendingApprovalModel
     template_name = "main/All request/apply_list pending approval.html"
@@ -189,6 +196,7 @@ class CustomerPendingApprovalFormListView(ListView):
         return context
 
 
+# cutomer apropval request list
 class CustomerApprovalFormListView(ListView):
     model = ApprovedCustomerRequest
     template_name = "main/All request/apply_list approval.html"
@@ -220,6 +228,7 @@ class CustomerApprovalFormListView(ListView):
         return context
 
 
+# cutomer reject request list
 class CustomerRejectFormListView(ListView):
     model = RejectedCustomerRequest
     template_name = "main/All request/apply_list reject.html"
@@ -251,6 +260,7 @@ class CustomerRejectFormListView(ListView):
         return context
 
 
+# cutomer status change list
 class ChangeStatusView(View):
     template_name = "main/All request/status.html"
     form_class = RequestRegistrationForm
@@ -279,6 +289,7 @@ class ChangeStatusView(View):
         )
 
 
+# cutomer  list
 class AllCustomerListView(ListView):
     model = Customer
     template_name = "main/all_customer.html"
@@ -297,9 +308,7 @@ class AllCustomerListView(ListView):
         return super().dispatch(request, *args, **kwargs)
 
 
-
-
-
+# admin customer memebr profile view
 class AdminCustomerDetailView(DetailView):
     model = Customer
     template_name = "main/customer_profile_view.html"
@@ -312,3 +321,93 @@ class AdminCustomerDetailView(DetailView):
         return super().dispatch(request, *args, **kwargs)
 
 
+# admin profile view
+class AdminProfileView(DetailView):
+    model = User
+    template_name = "main/admin_profile.html"
+    context_object_name = "user"
+
+    def get_object(self, queryset=None):
+        # This method is used to get the object for the view.
+        # In this case, it returns the UserProfile related to the logged-in user.
+        return self.request.user.user
+
+
+# admin password change passoword
+class AdminPasswordChangeView(PasswordChangeView):
+    template_name = "main/admin_password_change.html"
+    success_url = reverse_lazy("main")
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_superuser:
+            return redirect("main")
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        messages.success(self.request, "Your password was successfully updated!")
+        return super().form_valid(form)
+
+
+# create a superuser
+class CreateSuperuserView(View):
+    template_name = "main/create_admin.html"
+    form_class = SuperuserCreationForm
+
+    def get(self, request, *args, **kwargs):
+        form = self.form_class()
+        return render(request, self.template_name, {"form": form})
+
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            user = form.save()
+            user.is_staff = True
+            user.is_superuser = True
+            user.save()
+            # Log in the user
+            login(request, user)
+            messages.success(request, "SuperUser created successfully..!")
+            return redirect(
+                "main"
+            )  # Change 'main' to the desired URL after superuser creation
+        else:
+            messages.error(request, "SuperUser creation failed. Please check the form.")
+            return render(request, self.template_name, {"form": form})
+
+
+# superuser list view
+class SuperuserListView(ListView):
+    model = User
+    template_name = "main/superuser_list.html"
+    context_object_name = "superusers"
+    paginate_by = 1  # Set the number of items to display per page
+
+    def get_queryset(self):
+        queryset = User.objects.filter(is_superuser=True).order_by("-username")
+        for i, obj in enumerate(queryset, start=1):
+            obj.serial_number = i
+        return queryset
+
+    def dispatch(self, request, *args, **kwargs):
+        if not self.request.user.is_superuser:
+            return redirect("main")
+        return super().dispatch(request, *args, **kwargs)
+
+
+# super user delete
+class DeleteSuperAccountView(View):
+    template_name = "main/delete_account.html"
+
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name)
+
+    def dispatch(self, request, *args, **kwargs):
+        if not self.request.user.is_superuser:
+            return redirect("main")  # Fixed typo here
+        return super().dispatch(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        user.delete()
+        messages.success(request, "Your account has been deleted.")
+        return redirect("main")

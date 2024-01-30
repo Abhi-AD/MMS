@@ -1,0 +1,48 @@
+<{% extends "main/base.html" %} {% load static %} {% block content %} {% if user.is_superuser %} <div
+     class="table-responsive text-capitalize">
+
+     <table class="table  table-hover table-bordered">
+          <thead class="table-primary">
+               <tr>
+                    <th>S.N</th>
+                    <th>User Name</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Staff</th>
+                    <th>Super User</th>
+                    <th>Active</th>
+                    <th>Edit</th>
+               </tr>
+          </thead>
+          <tbody>
+               {% for obj in superusers %}
+          <tbody>
+               <tr>
+                    <td>{{ obj.serial_number }}</td>
+                    <td class=" text-lowercase">{{ obj.username }} </td>
+                    <td>{{obj.first_name}} {{obj.last_name}}</td>
+                    <td class=" text-lowercase">{{ obj.email }} </td>
+                    <td>{{ obj.is_staff }} </td>
+                    <td>{{ obj.is_superuser }} </td>
+                    <td>{{ obj.is_active }} </td>
+                    <td> <a href="" class="btn btn-primary">View</a>
+                         <a href="{% url 'delete_super_account' %}" class="btn btn-danger" onclick="return confirm('Are you sure?')">Delete</a>
+                    </td>
+
+
+
+               </tr>
+               <!-- Add more rows as needed -->
+          </tbody>
+          {% endfor %}
+          </tbody>
+     </table>
+     </div>
+     {% include 'pagination.html' %}
+
+     {% else %}
+     {% include 'main/login.html' %}
+
+     {% endif %}
+
+     {% endblock content %}

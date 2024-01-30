@@ -1,0 +1,19 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+     <h2>Create Superuser</h2>
+     <form method="post" action="{% url 'create_superuser' %}">
+          {% csrf_token %}
+          <div class="form-group">
+               {{ form.as_p }}
+          </div>
+          <button type="submit" class="btn btn-success">Create Superuser</button>
+          <a href="{% url 'main' %}" class="btn btn-secondary">Back</a>
+
+     </form>
+</div>
+
+
+{% endblock content %}
