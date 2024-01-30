@@ -1,7 +1,7 @@
 # django libaries
 from django.shortcuts import render, redirect, get_object_or_404
-from django.views.generic import View, ListView, CreateView, DetailView, DeleteView
-from django.urls import reverse_lazy
+from django.views.generic import View, ListView, CreateView, DetailView, DeleteView,UpdateView
+from django.urls import reverse_lazy, reverse
 from django.contrib.auth import authenticate, login, logout
 from django.views import View
 from django.contrib import messages
@@ -15,7 +15,7 @@ from app.models import *
 from admin_app.forms import (
     PaymentForm,
     RequestRegistrationForm,
-    CustomerApplyRequestForm,
+    ServiceForm,
     SuperuserCreationForm,
 )
 
@@ -47,10 +47,14 @@ class MainView(View):
 # all payment history
 class PaymentListView(ListView):
     model = Payment
-    template_name = "main/payment_list.html"
+    template_name = "main/payment/payment_list.html"
+    paginate_by = 10
 
     def get_queryset(self):
-        return Payment.objects.all()
+        queryset = Payment.objects.all().order_by("-payment_date")
+        for i, obj in enumerate(queryset, start=1):
+            obj.serial_number = i
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -68,7 +72,7 @@ class PaymentListView(ListView):
 
 # payment create
 class PaymentCreateView(CreateView):
-    template_name = "main/payment_form.html"
+    template_name = "main/payment/payment_form.html"
     form_class = PaymentForm
 
     def get(self, request):
@@ -106,7 +110,7 @@ class CustomerFormListView(ListView):
     template_name = "main/All request/apply_list.html"
     context_object_name = "obj"  # Variable name used in the template
     queryset = CustomerApplyRequest.objects.all().order_by("-update_at")
-    paginate_by = 2  # Number of items to display per page
+    paginate_by = 10  # Number of items to display per page
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -138,7 +142,7 @@ class CustomerPendingFormListView(ListView):
     template_name = "main/All request/apply_list pending.html"
     context_object_name = "obj"  # Variable name used in the template
     queryset = PendingCustomerRequest.objects.all().order_by("-update_at")
-    paginate_by = 2  # Number of items to display per page
+    paginate_by = 10  # Number of items to display per page
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -170,7 +174,7 @@ class CustomerPendingApprovalFormListView(ListView):
     template_name = "main/All request/apply_list pending approval.html"
     context_object_name = "obj"  # Variable name used in the template
     queryset = PendingApprovalModel.objects.all().order_by("-update_at")
-    paginate_by = 2  # Number of items to display per page
+    paginate_by = 10  # Number of items to display per page
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -202,7 +206,7 @@ class CustomerApprovalFormListView(ListView):
     template_name = "main/All request/apply_list approval.html"
     context_object_name = "obj"  # Variable name used in the template
     queryset = ApprovedCustomerRequest.objects.all().order_by("-update_at")
-    paginate_by = 2  # Number of items to display per page
+    paginate_by = 10  # Number of items to display per page
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -234,7 +238,7 @@ class CustomerRejectFormListView(ListView):
     template_name = "main/All request/apply_list reject.html"
     context_object_name = "obj"  # Variable name used in the template
     queryset = RejectedCustomerRequest.objects.all().order_by("-update_at")
-    paginate_by = 2  # Number of items to display per page
+    paginate_by = 10  # Number of items to display per page
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -292,9 +296,9 @@ class ChangeStatusView(View):
 # cutomer  list
 class AllCustomerListView(ListView):
     model = Customer
-    template_name = "main/all_customer.html"
+    template_name = "main/customer/all_customer.html"
     context_object_name = "customer"
-    paginate_by = 1  # Set the number of items to display per page
+    paginate_by = 10  # Set the number of items to display per page
 
     def get_queryset(self):
         queryset = Customer.objects.all()
@@ -311,7 +315,7 @@ class AllCustomerListView(ListView):
 # admin customer memebr profile view
 class AdminCustomerDetailView(DetailView):
     model = Customer
-    template_name = "main/customer_profile_view.html"
+    template_name = "main/customer/customer_profile_view.html"
     context_object_name = "customer"
     pk_url_kwarg = "pk"
 
@@ -335,7 +339,7 @@ class AdminProfileView(DetailView):
 
 # admin password change passoword
 class AdminPasswordChangeView(PasswordChangeView):
-    template_name = "main/admin_password_change.html"
+    template_name = "main/admin/admin_password_change.html"
     success_url = reverse_lazy("main")
 
     def dispatch(self, request, *args, **kwargs):
@@ -350,7 +354,7 @@ class AdminPasswordChangeView(PasswordChangeView):
 
 # create a superuser
 class CreateSuperuserView(View):
-    template_name = "main/create_admin.html"
+    template_name = "main/admin/create_admin.html"
     form_class = SuperuserCreationForm
 
     def get(self, request, *args, **kwargs):
@@ -380,7 +384,7 @@ class SuperuserListView(ListView):
     model = User
     template_name = "main/superuser_list.html"
     context_object_name = "superusers"
-    paginate_by = 1  # Set the number of items to display per page
+    paginate_by = 10  # Set the number of items to display per page
 
     def get_queryset(self):
         queryset = User.objects.filter(is_superuser=True).order_by("-username")
@@ -396,7 +400,7 @@ class SuperuserListView(ListView):
 
 # super user delete
 class DeleteSuperAccountView(View):
-    template_name = "main/delete_account.html"
+    template_name = "main/admin/delete_account.html"
 
     def get(self, request, *args, **kwargs):
         return render(request, self.template_name)
@@ -411,3 +415,119 @@ class DeleteSuperAccountView(View):
         user.delete()
         messages.success(request, "Your account has been deleted.")
         return redirect("main")
+
+
+# all service history
+class ServiceListView(ListView):
+    model = Service
+    template_name = "main/service/service_list.html"
+    context_object_name = "services"
+    paginate_by = 10  # Set the number of items per page
+
+    def get_queryset(self):
+        queryset = Service.objects.all().order_by("-date_of_signature")
+        for i, obj in enumerate(queryset, start=1):
+            obj.serial_number = i
+        return queryset
+
+    def dispatch(self, request, *args, **kwargs):
+        if not self.request.user.is_superuser:
+            return redirect("main")  # Fixed typo here
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # Calculate total amount
+        total_amount = Service.objects.all().count()
+
+        # Add total_amount to the context
+        context["total_amount"] = total_amount
+
+        return context
+
+
+# service create
+class ServiceCreateView(CreateView):
+    template_name = "main/service/service_form.html"
+    form_class = ServiceForm
+
+    def get(self, request):
+        form = self.form_class()
+        return render(request, self.template_name, {"form": form})
+
+    def dispatch(self, request, *args, **kwargs):
+        if not self.request.user.is_superuser:
+            return redirect("main")  # Fixed typo here
+        return super().dispatch(request, *args, **kwargs)
+
+    def post(self, request):
+        form = self.form_class(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            messages.success(
+                request,
+                "Successfully Service/produc add..! ",
+            )
+            return redirect("service")
+        else:
+            messages.error(request, "Cannot submit your data. ")
+            return render(
+                request,
+                self.template_name,
+                {"form": form},
+            )
+
+
+# service view
+class ServiceDetailView(DetailView):
+    model = Service
+    template_name = "main/service/service_profile_view.html"
+    context_object_name = "service"
+    pk_url_kwarg = "pk"
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_superuser:
+            return redirect("main")
+        return super().dispatch(request, *args, **kwargs)
+
+
+# serviuce update view
+class ServiceEditView(UpdateView):
+    model = Service
+    template_name = "main/service/service_edit_view.html" 
+    form_class = ServiceForm
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_superuser:
+            return redirect("main")  # Change "main" to the appropriate URL or name
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_success_url(self):
+        # Define the success URL after editing the service
+        return reverse("service_view_detail", kwargs={"pk": self.object.pk})  # Change "service_detail" to the appropriate URL or name
+
+
+
+
+
+
+# service delete
+class ServiceDeleteView(DeleteView):
+    model = Service  # Replace YourServiceModel with your actual model
+    template_name = "main/service/service_confirm_delete.html"  # Customize the template as needed
+    success_url = reverse_lazy("service")  # Replace "service" with your actual URL name
+
+    def dispatch(self, request, *args, **kwargs):
+        if not self.request.user.is_superuser:
+            return redirect("main")  # Redirect to the main page if not a superuser
+        return super().dispatch(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        messages.success(request, "Successfully deleted the service/product.")
+        return super().delete(request, *args, **kwargs)
+
+
+
+
+

@@ -1,0 +1,52 @@
+{% extends "main/base.html" %}
+{% load static %}
+{% block content %}
+{% if user.is_superuser %}
+
+<div class="table-responsive text-capitalize">
+
+     <table class="table  table-hover table-bordered">
+          <thead class="table-primary">
+               <tr>
+                    <th>S.N</th>
+                    <th>Name</th>
+                    <th>amount</th>
+                    <th>bill</th>
+                    <th>date</th>
+               </tr>
+          </thead>
+          <tbody>
+               {% for obj in object_list %}
+          <tbody>
+               <style>
+                    .img-container:hover img {
+                         transform: scale(1.5);
+                    }
+               </style>
+               <tr>
+                    <td>{{obj.serial_number}}</td>
+                    <td>{{obj.category}}</td>
+                    <td>{{obj.amount}}</td>
+                    <td>
+                         <div class="img-container">
+                              <img src="{{obj.bill.url}}" alt="{{ obj.category}}" class="img-thumbnail"
+                                   style="max-width: 100px;">
+                         </div>
+                    </td>
+                    <td>{{obj.payment_date }}</td>
+
+
+               </tr>
+               <!-- Add more rows as needed -->
+          </tbody>
+          {% endfor %}
+          </tbody>
+     </table>
+</div>
+{% include 'pagination.html' %}
+
+{% else %}
+{% include 'main/login.html' %}
+
+{% endif %}
+{% endblock content %}

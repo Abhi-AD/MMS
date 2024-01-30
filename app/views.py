@@ -179,7 +179,7 @@ class SubmitApplicationView(LoginRequiredMixin, View):
 
 # profile view
 class UserProfileView(LoginRequiredMixin, View):
-    template_name = "app/customer_profile.html"
+    template_name = "app/customer/customer_profile.html"
     login_url = "/user_login/"
 
     def get(self, request, *args, **kwargs):
@@ -195,7 +195,7 @@ class UserProfileView(LoginRequiredMixin, View):
 
 # change password
 class ChangePasswordView(LoginRequiredMixin, View):
-    template_name = "app/customer_change_password.html"
+    template_name = "app/customer/customer_change_password.html"
     login_url = "/user_login/"
 
     def get(self, request, *args, **kwargs):
@@ -229,7 +229,7 @@ class ChangePasswordView(LoginRequiredMixin, View):
 
 
 class CustomerProfileEditView(LoginRequiredMixin, View):
-    template_name = "app/customer_profile_edit.html"
+    template_name = "app/customer/customer_profile_edit.html"
     login_url = "/user_login/"
 
     def get(self, request, *args, **kwargs):
@@ -262,7 +262,7 @@ class CustomerProfileEditView(LoginRequiredMixin, View):
 # delete the account
 
 class DeleteAccountView(LoginRequiredMixin,View):
-    template_name = 'app/delete_account.html'
+    template_name = 'app/customer/delete_customer_account.html'
     login_url = "/user_login/"
     
 

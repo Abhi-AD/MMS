@@ -1,0 +1,70 @@
+{% extends "main/base.html" %}
+{% load static %}
+{% block content %}
+{% if user.is_superuser %}
+
+<div class="table-responsive text-capitalize">
+
+     <table class="table  table-hover table-bordered">
+          <thead class="table-primary">
+               <tr>
+                    <th>S.N</th>
+                    <th>Name</th>
+                    <th>Duration days</th>
+                    <th>category</th>
+                    <th>Non refundable price</th>
+                    <th>refundable price</th>
+                    <th>basis foundation</th>
+                    <th>emi available</th>
+                    <th>footfalls</th>
+                    <th>footfalls description</th>
+                    <th>Images</th>
+                    <th>Create at</th>
+                    <th>Edit</th>
+               </tr>
+          </thead>
+          <tbody>
+               {% for obj in services %}
+          <tbody>
+               <style>
+                    .img-container:hover img {
+                         transform: scale(1.5);
+                    }
+               </style>
+               <tr>
+                    <td>{{obj.serial_number}}</td>
+                    <td>{{obj.name}}</td>
+                    <td>{{obj.duration_days}}</td>
+                    <td>{{obj.category}}</td>
+                    <td>{{obj.non_refundable_price}}</td>
+                    <td>{{obj.refundable_price}}</td>
+                    <td>{{obj.basis_foundation}}</td>
+                    <td>{{obj.emi_available}}</td>
+                    <td>{{obj.footfalls}}</td>
+                    <td>{{obj.footfalls_description}}</td>
+                    <td>
+                         <div class="img-container">
+                              <img src="{{obj.images.url}}" alt="{{ obj.category}}" class="img-thumbnail"
+                                   style="max-width: 100px;">
+                         </div>
+                    </td>
+                    <td>{{obj.date_of_signature }}</td>
+                    <td> <a href="{% url 'service_view_detail' obj.pk %}" class="btn btn-primary">View</a>
+                    </td>
+
+
+
+               </tr>
+               <!-- Add more rows as needed -->
+          </tbody>
+          {% endfor %}
+          </tbody>
+     </table>
+</div>
+{% include 'pagination.html' %}
+
+{% else %}
+{% include 'main/login.html' %}
+
+{% endif %}
+{% endblock content %}

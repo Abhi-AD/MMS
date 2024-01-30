@@ -49,6 +49,20 @@ urlpatterns = [
     path("admin_profile/", AdminProfileView.as_view(), name="admin_profile"),
     path("create_superuser/", CreateSuperuserView.as_view(), name="create_superuser"),
     path("superuser_list/", SuperuserListView.as_view(), name="superuser_list"),
-    path('delete_super_account/', DeleteSuperAccountView.as_view(), name='delete_super_account'),
-    
+    path(
+        "delete_super_account/",
+        DeleteSuperAccountView.as_view(),
+        name="delete_super_account",
+    ),
+    path("service/", ServiceListView.as_view(), name="service"),
+    path("service_create/", ServiceCreateView.as_view(), name="service_create"),
+    path(
+        "service/<int:pk>/",
+        ServiceDetailView.as_view(),
+        name="service_view_detail",
+    ),
+    path("service/<int:pk>/edit/", ServiceEditView.as_view(), name="service_edit"),
+    path(
+        "service/<int:pk>/delete/", ServiceDeleteView.as_view(), name="service-delete"
+    ),
 ]

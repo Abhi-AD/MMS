@@ -1,0 +1,29 @@
+{% extends "app/base.html" %}
+{% load static %}
+{% block content %}
+
+<div class="container mt-5">
+     <div class="row justify-content-center">
+          <h2>Edit Service</h2>
+          <div class="col-md-4">
+               <img src="{{ object.images.url }}" alt="Images" height="200" width="200"
+                    class="img-thumbnail my-5 d-flex">
+          </div>
+          <div class="col-md-8">
+               <h6 class="col-sm-6 form-group form-row">Name: {{ object.name }}</h6>
+               <h6 class="col-sm-6 form-group form-row">Days: {{ object.duration_days }} days</h6>
+               <h6 class="col-sm-6 form-group form-row">Category: {{ object.category }} </h6>
+               <h6 class="col-sm-6 form-group form-row">Create Date: {{ object.date_of_signature }}</h6>
+               <br>
+               <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn btn-success">Submit</button>
+                    <a href="{% url 'service' %}" class="btn btn-secondary ">Back</a>
+               </form>
+
+          </div>
+     </div>
+</div>
+
+{% endblock content %}
