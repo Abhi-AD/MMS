@@ -63,6 +63,6 @@ urlpatterns = [
     ),
     path("service/<int:pk>/edit/", ServiceEditView.as_view(), name="service_edit"),
     path(
-        "service/<int:pk>/delete/", ServiceDeleteView.as_view(), name="service-delete"
+        "service/<int:pk>/delete/", ServiceDeleteView.as_view(), name="service_delete"
     ),
 ]

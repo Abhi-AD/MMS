@@ -87,6 +87,7 @@
                               </div>
                          </div>
                          <a href="{% url 'service_edit' service.pk%}" class="btn btn-primary">Edit</a>
+                         <a href="{% url 'service_delete' service.pk%}" class="btn btn-danger" onclick="return confirm('Are you sure Confirm?')">Delete</a>
                          <a href="{% url 'service' %}" class="btn btn-secondary">Back</a>
                     </div>
                </div>

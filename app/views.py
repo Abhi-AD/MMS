@@ -225,9 +225,6 @@ class ChangePasswordView(LoginRequiredMixin, View):
 
 
 # profil edit
-
-
-
 class CustomerProfileEditView(LoginRequiredMixin, View):
     template_name = "app/customer/customer_profile_edit.html"
     login_url = "/user_login/"
@@ -256,11 +253,7 @@ class CustomerProfileEditView(LoginRequiredMixin, View):
 
         return render(request, self.template_name, {"form": form, "customer": customer})
 
-
-
-
 # delete the account
-
 class DeleteAccountView(LoginRequiredMixin,View):
     template_name = 'app/customer/delete_customer_account.html'
     login_url = "/user_login/"
@@ -274,3 +267,9 @@ class DeleteAccountView(LoginRequiredMixin,View):
         user.delete()
         messages.success(request, 'Your account has been deleted.')
         return redirect('home') 
+    
+    
+    
+    
+    
+    

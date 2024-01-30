@@ -19,7 +19,7 @@
                     {% csrf_token %}
                     {{ form.as_p }}
                     <button type="submit" class="btn btn-success">Submit</button>
-                    <a href="{% url 'service' %}" class="btn btn-secondary ">Back</a>
+                    <a href="{% url 'service_view_detail' service.pk %}" class="btn btn-secondary ">Back</a>
                </form>
 
           </div>

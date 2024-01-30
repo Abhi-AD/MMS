@@ -2,13 +2,11 @@
 {% load static %}
 {% block content %}
 
-<h2>Confirm Deletion</h2>
+<h1>Confirm Deletion</h1><h5>{{ object }}</h5>
 
-<p>Are you sure you want to delete the service/product "{{ object }}"?</p>
-
-<form method="post" action="{% url 'service-delete' pk=object.pk %}">
+<form method="post" action="">
      {% csrf_token %}
-     <input type="submit" class="btn btn-danger" value="Delete">
+     <input type="submit" class="btn btn-danger" value="Delete" onclick="return confirm('Are you sure Confirm?')">
      <a href="{% url 'service' %}" class="btn btn-secondary">Cancel</a>
 </form>
 {% endblock content %}
