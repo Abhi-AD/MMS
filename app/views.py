@@ -31,6 +31,7 @@ from app.forms import (
     CustomerRegistrationForm,
     CustomerApplyRequestForm,
 )
+from django.http import Http404
 from django.views.generic.edit import FormView
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
@@ -112,7 +113,7 @@ class RegistrationView(FormView):
             # Get data from the form
             first_name = form.cleaned_data["first_name"]
             last_name = form.cleaned_data["last_name"]
-            customercode = form.cleaned_data["customercode"]
+            contact = form.cleaned_data["contact"]
             username = form.cleaned_data["username"]
             password = form.cleaned_data["password"]
             images = form.cleaned_data["images"]
@@ -128,7 +129,7 @@ class RegistrationView(FormView):
 
                 # Create related Customer instance
                 Customer.objects.create(
-                    member=user, customercode=customercode, images=images
+                    member=user, contact=contact, images=images
                 )
                 messages.success(request, "Create a new account ...!")
                 return super().form_valid(form)
@@ -225,7 +226,6 @@ class ChangePasswordView(LoginRequiredMixin, View):
 
 # profil edit
 
-from django.http import Http404
 
 
 class CustomerProfileEditView(LoginRequiredMixin, View):
@@ -257,3 +257,20 @@ class CustomerProfileEditView(LoginRequiredMixin, View):
         return render(request, self.template_name, {"form": form, "customer": customer})
 
 
+
+
+# delete the account
+
+class DeleteAccountView(LoginRequiredMixin,View):
+    template_name = 'app/delete_account.html'
+    login_url = "/user_login/"
+    
+
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name)
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        user.delete()
+        messages.success(request, 'Your account has been deleted.')
+        return redirect('home') 

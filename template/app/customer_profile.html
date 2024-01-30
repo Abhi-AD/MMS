@@ -19,11 +19,11 @@
                          {{user_profile.street_address2}}</h6>
                     <h6 class="col-sm-6 form-group form-row">City:{{user_profile.city}}</h6>
                     <h6 class="col-sm-6 form-group form-row">Rollnumber:{{user_profile.rollnumber}}</h6>
-                    <h6 class="col-sm-6 form-group form-row">Customercode:{{user_profile.customercode}}</h6>
                     <h6 class="col-sm-6 form-group form-row">Join Date:{{user_profile.date_of_signature}}</h6>
 
                     <a href="{% url 'profile_edit' %}" class="btn btn-primary ">EDIT</a>
                     <a href="{% url 'change_password' %}" class="btn btn-secondary ">Changepassword</a>
+                    <a href="{% url 'delete_account' %}" class="btn btn-danger "  onclick="return confirm('Are you sure?')">Delete</a>
                </div>
           </div>
      </div>

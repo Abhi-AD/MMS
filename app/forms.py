@@ -29,7 +29,7 @@ class UserLoginForm(forms.Form):
 class CustomerRegistrationForm(forms.Form):
     first_name = forms.CharField(max_length=255)
     last_name = forms.CharField(max_length=255)
-    customercode = forms.IntegerField()
+    contact = forms.IntegerField()
     username = forms.EmailField()
     password = forms.CharField(widget=forms.PasswordInput)
     confirm_password = forms.CharField(widget=forms.PasswordInput)

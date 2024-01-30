@@ -14,7 +14,6 @@
                <h6 class="col-sm-6 form-group form-row">Name: {{ member.first_name }}
                     {{customer.member.last_name}}</h6>
                <h6 class="col-sm-6 form-group form-row">Contact: {{customer.contact}}</h6>
-               <h6 class="col-sm-6 form-group form-row">Customercode:{{customer.customercode}}</h6>
                <h6 class="col-sm-6 form-group form-row">Joining:{{customer.date_of_signature}}</h6>
                <h6 class="col-sm-6 form-group form-row">Roll_number: {{customer.rollnumber}}</h6>
 
@@ -23,6 +22,7 @@
                     {% csrf_token %}
                     {{ form.as_p }}
                     <button type="submit" class="btn btn-success">Submit</button>
+                    <a href="{% url 'profile' %}" class="btn btn-secondary ">Back</a>
 
                </form>
 

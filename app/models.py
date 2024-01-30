@@ -28,7 +28,6 @@ class Customer(models.Model):
     emergency_contact = models.CharField(max_length=10, blank=True, null=True)
     emergency_contact2 = models.CharField(max_length=10, blank=True, null=True)
     rollnumber = models.CharField(max_length=20, unique=True, editable=False)
-    customercode = models.IntegerField(null=True)
 
     def __str__(self):
         return (
@@ -36,14 +35,9 @@ class Customer(models.Model):
         )
 
     def save(self, *args, **kwargs):
-        # Generate roll number based on current date and primary key
         date_prefix = timezone.now().strftime("%m-%d-%y")
         roll_number = f"{date_prefix}-{self.pk}"
-
-        # Assign the generated roll number
         self.rollnumber = roll_number
-
-        # Call the original save method to save the instance
         super().save(*args, **kwargs)
 
 
