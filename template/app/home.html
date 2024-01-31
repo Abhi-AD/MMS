@@ -1,12 +1,38 @@
 {% extends 'app/base.html' %}
 {% block content%}
 <br>
-<div class="container col-8">
-     <h1>Welcome to MMS App</h1>
-     <div id="greeting" class="h2"></div>
-     <h2>Thank you visit in app <a href="{% url 'home' %}">{{user.first_name}} {{user.last_name}}</a></h2>
+<div id="greeting" class="h2"></div>
+<div class="mt-5">
+     <div class="row">
+          {% for service in services %}
+          <div class="col-md-4">
+               <div class="service-item card" style="margin: 10px; padding: 10px;">
+                    <div class="card-header" data-toggle="collapse" data-target="#serviceDetails{{ forloop.counter }}">
+                         <div class="d-flex justify-content-between align-items-center">
+                              <h3 class="mb-0">
+                                   {{ service.name |truncatechars:30}}
+                              </h3>
+                              <div>
+                                   <i class="caret-icon fas fa-caret-down"></i>
+                                   <i class="caret-icon fas fa-caret-up" style="display: none;"></i>
+                              </div>
+                         </div>
+                    </div>
+                    <div id="serviceDetails{{ forloop.counter }}" class="collapse">
+                         <div class="card-body">
+                              <p class="card-text">Duration: {{ service.duration_days }} days</p>
+                              <p class="card-text">Category: {{ service.category }}</p>
+                              <p class="card-text">Non-Refundable Price: ${{ service.non_refundable_price }}</p>
+                              <p class="card-text">Refundable Price: ${{ service.refundable_price }}</p>
+                              <a href="{% url 'customer_service_view_detail' service.pk %}"
+                                   class="btn btn-primary">View</a>
 
-
+                         </div>
+                    </div>
+               </div>
+          </div>
+          {% endfor %}
+     </div>
 </div>
 <script>
      document.addEventListener('DOMContentLoaded', function () {
@@ -29,4 +55,14 @@
 </script>
 
 
+
+
+<!-- The corrected script -->
+<script>
+     $(document).ready(function () {
+          $('.card-header').click(function () {
+               $(this).find('.fa-caret-up, .fa-caret-down').toggle();
+          });
+     });
+</script>
 {%endblock content%}

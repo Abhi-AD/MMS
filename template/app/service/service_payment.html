@@ -1,0 +1,16 @@
+<!-- app/payment/payment_create.html -->
+
+{% extends 'app/base.html' %}
+
+{% block content %}
+<h2>Service Details</h2>
+<p>Service Name: {{ service.name }}</p>
+<p>Service Days: {{ service.duration_days }} days</p>
+<p>Category: {{ service.category }}</p>
+  <h2>Create Payment</h2>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Submit</button>
+  </form>
+{% endblock %}

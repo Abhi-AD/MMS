@@ -46,12 +46,12 @@ class MainView(View):
 
 # all payment history
 class PaymentListView(ListView):
-    model = Payment
+    model = ServicePayment
     template_name = "main/payment/payment_list.html"
     paginate_by = 10
 
     def get_queryset(self):
-        queryset = Payment.objects.all().order_by("-payment_date")
+        queryset = ServicePayment.objects.all().order_by("-payment_date")
         for i, obj in enumerate(queryset, start=1):
             obj.serial_number = i
         return queryset
@@ -60,7 +60,7 @@ class PaymentListView(ListView):
         context = super().get_context_data(**kwargs)
 
         # Calculate total amount
-        total_amount = Payment.objects.aggregate(total_amount=models.Sum("amount"))[
+        total_amount = ServicePayment.objects.aggregate(total_amount=models.Sum("amount"))[
             "total_amount"
         ]
 

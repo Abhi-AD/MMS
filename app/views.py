@@ -35,17 +35,17 @@ from django.http import Http404
 from django.views.generic.edit import FormView
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from admin_app.models import Service, ServicePayment
 
 # *******************************************************************************************************
 
 
 # home view authications
-class HomeView(LoginRequiredMixin, TemplateView):
+class HomeView(LoginRequiredMixin, ListView):
     template_name = "app/home.html"
     login_url = "/user_login/"
-
-    def get(self, request, *args, **kwargs):
-        return super().get(request, *args, **kwargs)
+    context_object_name = "services"  # Optional, if you want to use a different variable name in the template
+    queryset = Service.objects.all()
 
 
 # cutomer login
@@ -128,9 +128,7 @@ class RegistrationView(FormView):
                 )
 
                 # Create related Customer instance
-                Customer.objects.create(
-                    member=user, contact=contact, images=images
-                )
+                Customer.objects.create(member=user, contact=contact, images=images)
                 messages.success(request, "Create a new account ...!")
                 return super().form_valid(form)
             except Exception as e:
@@ -253,11 +251,11 @@ class CustomerProfileEditView(LoginRequiredMixin, View):
 
         return render(request, self.template_name, {"form": form, "customer": customer})
 
+
 # delete the account
-class DeleteAccountView(LoginRequiredMixin,View):
-    template_name = 'app/customer/delete_customer_account.html'
+class DeleteAccountView(LoginRequiredMixin, View):
+    template_name = "app/customer/delete_customer_account.html"
     login_url = "/user_login/"
-    
 
     def get(self, request, *args, **kwargs):
         return render(request, self.template_name)
@@ -265,11 +263,31 @@ class DeleteAccountView(LoginRequiredMixin,View):
     def post(self, request, *args, **kwargs):
         user = request.user
         user.delete()
-        messages.success(request, 'Your account has been deleted.')
-        return redirect('home') 
-    
-    
-    
-    
-    
-    
+        messages.success(request, "Your account has been deleted.")
+        return redirect("home")
+
+
+# service view in details in customer
+class CustomerServiceDetailView(DetailView):
+    model = Service
+    template_name = "app/service/service_profile_view.html"
+    context_object_name = "service"
+    pk_url_kwarg = "pk"
+
+class PaymentCreateView(CreateView):
+    model = ServicePayment
+    template_name = "app/service/service_payment.html"
+    fields = ["amount", "bill"]
+    success_url = reverse_lazy("home")
+
+    def form_valid(self, form):
+        service = get_object_or_404(Service, pk=self.kwargs["pk"])
+        form.instance.service = service
+        messages.success(self.request, f"You have successfully paid for {service}.")
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        service = get_object_or_404(Service, pk=self.kwargs["pk"])
+        context["service"] = service
+        return context

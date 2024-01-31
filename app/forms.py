@@ -50,3 +50,9 @@ class CustomerProfileEditForm(forms.ModelForm):
             'emergency_contact',
             'emergency_contact2',
         ]
+
+
+
+
+
+

@@ -1,4 +1,4 @@
-{% extends "main/base.html" %}
+{% extends "app/base.html" %}
 {% block content %}
 {% load static %}
 <h2 class="p-2 text-secondary">Service Details</h2>
@@ -15,7 +15,7 @@
                                    <img src="{{service.images.url }}" alt="{{service.category}}" height="100px">
                                    <h5 class="my-3">Name: {{service.name}}</h5>
                                    <p class="text-muted mb-1">Category: {{service.category}}</p>
-                                   <p class="text-muted mb-4">  Day: {{service.duration_days}} days</p>
+                                   <p class="text-muted mb-4"> Day: {{service.duration_days}} days</p>
                               </div>
                          </div>
                     </div>
@@ -86,8 +86,7 @@
                                    </div>
                               </div>
                          </div>
-                         <a href="{% url 'service_edit' service.pk%}" class="btn btn-primary">Edit</a>
-                         <a href="{% url 'service_delete' service.pk%}" class="btn btn-danger" onclick="return confirm('Are you sure Confirm?')">Delete</a>
+                         <a href="{% url 'create_payment' service.pk %}" class="btn btn-primary">Make Payment</a>
                          <a href="{% url 'service' %}" class="btn btn-secondary">Back</a>
                     </div>
                </div>
