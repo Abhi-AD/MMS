@@ -35,7 +35,7 @@ from django.http import Http404
 from django.views.generic.edit import FormView
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
-from admin_app.models import Service, ServicePayment
+from admin_app.models import Service, CustomerServicePayment
 
 # *******************************************************************************************************
 
@@ -274,8 +274,14 @@ class CustomerServiceDetailView(DetailView):
     context_object_name = "service"
     pk_url_kwarg = "pk"
 
-class PaymentCreateView(CreateView):
-    model = ServicePayment
+
+
+
+
+
+
+class PaymentCreateView(LoginRequiredMixin, CreateView):
+    model = CustomerServicePayment
     template_name = "app/service/service_payment.html"
     fields = ["amount", "bill"]
     success_url = reverse_lazy("home")
@@ -283,6 +289,11 @@ class PaymentCreateView(CreateView):
     def form_valid(self, form):
         service = get_object_or_404(Service, pk=self.kwargs["pk"])
         form.instance.service = service
+
+        # Assuming the logged-in user is a Customer
+        customer = get_object_or_404(Customer, member=self.request.user)
+        form.instance.member = customer
+
         messages.success(self.request, f"You have successfully paid for {service}.")
         return super().form_valid(form)
 
@@ -291,3 +302,12 @@ class PaymentCreateView(CreateView):
         service = get_object_or_404(Service, pk=self.kwargs["pk"])
         context["service"] = service
         return context
+
+
+
+
+
+
+
+
+

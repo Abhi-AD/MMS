@@ -10,8 +10,9 @@
                <tr>
                     <th>S.N</th>
                     <th>Name</th>
+                    <th>Service</th>
                     <th>amount</th>
-                    <th>bill</th>
+                    <th>transaction</th>
                     <th>date</th>
                </tr>
           </thead>
@@ -25,7 +26,8 @@
                </style>
                <tr>
                     <td>{{obj.serial_number}}</td>
-                    <td>{{obj.category}}</td>
+                    <td>{{obj.member.member.first_name}} {{obj.member.member.last_name}}</td>
+                    <td>{{obj.service}}</td>
                     <td>{{obj.amount}}</td>
                     <td>
                          <div class="img-container">
@@ -33,7 +35,7 @@
                                    style="max-width: 100px;">
                          </div>
                     </td>
-                    <td>{{obj.payment_date }}</td>
+                    <td>{{obj.payment_date |date:" F j, Y"}}</td>
 
 
                </tr>

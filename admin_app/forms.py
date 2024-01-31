@@ -20,7 +20,7 @@ class SuperuserCreationForm(UserCreationForm):
 
 class PaymentForm(forms.ModelForm):
     class Meta:
-        model = ServicePayment
+        model = CustomerServicePayment
         fields = "__all__"
 
 

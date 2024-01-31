@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils import timezone
-
+from app.models import Customer
 
 # Create your models here.
 
@@ -42,7 +42,7 @@ class Service(models.Model):
         return self.name
 
 
-class ServicePayment(models.Model):
+class CustomerServicePayment(models.Model):
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     payment_date = models.DateTimeField(auto_now_add=True)
     bill = models.ImageField(upload_to="ServicePayment/%Y/%m/%d")
@@ -50,6 +50,8 @@ class ServicePayment(models.Model):
     
     # ForeignKey to establish a relationship with Service model
     service = models.ForeignKey(Service, on_delete=models.CASCADE, related_name='servicepayments')
+    member = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    
 
     def __str__(self):
         return f"{self.category} {self.amount} for {self.service.name}"
