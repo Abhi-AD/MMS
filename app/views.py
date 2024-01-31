@@ -25,6 +25,7 @@ from django.views import View
 from django.contrib import messages
 from django.db.models import Count
 from app.models import *
+from admin_app.models import *
 from app.forms import (
     CustomerProfileEditForm,
     UserLoginForm,
@@ -175,20 +176,6 @@ class SubmitApplicationView(LoginRequiredMixin, View):
         return render(request, self.template_name, {"form": form})
 
 
-# profile view
-class UserProfileView(LoginRequiredMixin, View):
-    template_name = "app/customer/customer_profile.html"
-    login_url = "/user_login/"
-
-    def get(self, request, *args, **kwargs):
-        try:
-            # Assuming Customer model has a ForeignKey to the User model named 'member'
-            user_profile = Customer.objects.get(member=request.user)
-            context = {"user_profile": user_profile}
-            return render(request, self.template_name, context)
-        except ObjectDoesNotExist:
-            messages.success(request, "You are not Customer...!")
-            return redirect("home")
 
 
 # change password
@@ -304,10 +291,45 @@ class PaymentCreateView(LoginRequiredMixin, CreateView):
         return context
 
 
+# booking service show in the customer
 
 
 
+class CombinedProfileView(LoginRequiredMixin, View):
+    template_name = "app/customer/combined_profile.html"
+    login_url = "/user_login/"
 
+    def get(self, request, *args, **kwargs):
+        try:
+            # Assuming Customer model has a ForeignKey to the User model named 'member'
+            user_profile = Customer.objects.get(member=request.user)
+            payments = CustomerServicePayment.objects.filter(member=user_profile)
 
+            context = {
+                "user_profile": user_profile,
+                "payments": payments,
+            }
 
-
+            return render(request, self.template_name, context)
+        except ObjectDoesNotExist:
+            messages.success(request, "You are not a Customer...!")
+            return redirect("home")    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    

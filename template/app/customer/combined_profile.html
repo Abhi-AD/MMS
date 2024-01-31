@@ -10,7 +10,7 @@
                     <img src="{{ user_profile.images.url }}" alt="Images" height="100" width="100"
                          class="img-thumbnail  my-5 d-flex">
                </div>
-               <div class="col-md-10">
+               <div class="col-md-8 text-capitalize">
                     <h6 class="col-sm-6 form-group form-row">Name: {{user_profile.member.first_name}}
                          {{user_profile.member.last_name}}</h6>
                     <h6 class="col-sm-6 form-group form-row">Contact:{{user_profile.contact}}
@@ -23,7 +23,13 @@
 
                     <a href="{% url 'profile_edit' %}" class="btn btn-primary ">EDIT</a>
                     <a href="{% url 'change_password' %}" class="btn btn-secondary ">Changepassword</a>
-                    <a href="{% url 'delete_account' %}" class="btn btn-danger "  onclick="return confirm('Are you sure?')">Delete</a>
+                    <a href="{% url 'delete_account' %}" class="btn btn-danger "
+                         onclick="return confirm('Are you sure?')">Delete</a>
+               </div>
+               <div class="col-md-2 text-capitalize">
+                    {% for payment in payments %}
+                    <p>Name:{{ payment.service.name }}</p>
+                    {% endfor %}
                </div>
           </div>
      </div>
