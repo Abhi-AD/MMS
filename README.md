@@ -47,7 +47,10 @@ To run tests, run the following command
 
 ## Running the project locally
 
-Goto [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
+Goto 
+```base
+[http://127.0.0.1:8000/](http://127.0.0.1:8000/)
+```
 - username: ("Your email id.......")
 - password: ("Your password.......")
 
@@ -55,7 +58,10 @@ Goto [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
 
 ## Running the project locally
 
-Goto [http://127.0.0.1:8000/main/](http://127.0.0.1:8000/main/)
+Goto 
+```base
+[http://127.0.0.1:8000/main/](http://127.0.0.1:8000/main/)
+```
 - username: MMS     
 - password: MMS
   
@@ -66,7 +72,10 @@ Goto [http://127.0.0.1:8000/main/](http://127.0.0.1:8000/main/)
 
 ### Running Django Administration
 
-Goto [http://127.0.0.1:8000/admin](http://127.0.0.1:8000/admin)
+Goto 
+```base
+[http://127.0.0.1:8000/admin](http://127.0.0.1:8000/admin)
+```
 - username: MMS     
 - password: MMS
   
