@@ -49,7 +49,7 @@ To run tests, run the following command
 
 Goto 
 ```base
-[http://127.0.0.1:8000/](http://127.0.0.1:8000/)
+http://127.0.0.1:8000/
 ```
 - username: ("Your email id.......")
 - password: ("Your password.......")
@@ -60,7 +60,7 @@ Goto
 
 Goto 
 ```base
-[http://127.0.0.1:8000/main/](http://127.0.0.1:8000/main/)
+http://127.0.0.1:8000/main/
 ```
 - username: MMS     
 - password: MMS
@@ -74,7 +74,7 @@ Goto
 
 Goto 
 ```base
-[http://127.0.0.1:8000/admin](http://127.0.0.1:8000/admin)
+http://127.0.0.1:8000/admin
 ```
 - username: MMS     
 - password: MMS
