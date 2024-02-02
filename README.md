@@ -46,8 +46,6 @@ To run tests, run the following command
 ```
 
 ## Running the project locally
-
-Goto 
 ```base
 http://127.0.0.1:8000/
 ```
@@ -57,8 +55,6 @@ http://127.0.0.1:8000/
 
 
 ## Running the project locally
-
-Goto 
 ```base
 http://127.0.0.1:8000/main/
 ```
@@ -71,8 +67,6 @@ http://127.0.0.1:8000/main/
 
 
 ### Running Django Administration
-
-Goto 
 ```base
 http://127.0.0.1:8000/admin
 ```
